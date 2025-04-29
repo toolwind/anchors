@@ -1,4 +1,4 @@
-import plugin from 'tailwindcss/plugin.js';
+import type { PluginCreator } from 'tailwindcss/plugin';
 
 const getStyleVarName = (modifier: string) =>
   modifier.startsWith('--') || modifier.startsWith('var(--')
@@ -12,38 +12,45 @@ const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-$
 // using empty values here so the compiler plays nice and generates the styles without values
 const EMPTY_VALUES = { values: { DEFAULT: '' } }
 
-export default plugin(({ matchUtilities, theme }) => {
+export default (({ matchUtilities, theme }) => {
   // anchor utilities (anchor-name)
   matchUtilities(
     {
       anchor: (_, { modifier }) => {
-        if (!modifier) return null;
-        return {
-          'anchor-name': getStyleVarName(modifier)!,
+        const styles: Record<string, string> = {};
+        if (modifier) {
+          const anchorName = getStyleVarName(modifier);
+          if (anchorName) {
+            styles['anchor-name'] = anchorName;
+          }
         }
+        return styles;
       },
     },
     {
       ...EMPTY_VALUES,
       modifiers: 'any',
     },
-  )
+  );
   // anchored utility (position-area and/or position-anchor)
   matchUtilities(
     {
       anchored: (value, { modifier }) => {
-        const viewTransitionName = modifier && generateViewTransitionId(modifier);
-        if (!value && !modifier) return null;
-        return {
-          ...(value ? { 'position-area': value } : {}),
-          ...(modifier ? {
-            'position-anchor': getStyleVarName(modifier),
-            ':where(&)': {
-              position: 'absolute',
-              'view-transition-name': viewTransitionName,
-            },
-          } : {}),
+        if (!value && !modifier) return {};
+
+        const baseStyles: Record<string, any> = {};
+        if (value) {
+          baseStyles['position-area'] = value;
         }
+        if (modifier) {
+          const viewTransitionName = generateViewTransitionId(modifier);
+          baseStyles['position-anchor'] = getStyleVarName(modifier);
+          baseStyles[':where(&)'] = {
+            position: 'absolute',
+            ...(viewTransitionName && { 'view-transition-name': viewTransitionName }),
+          };
+        }
+        return baseStyles;
       },
     },
     {
@@ -72,7 +79,7 @@ export default plugin(({ matchUtilities, theme }) => {
       },
       modifiers: 'any',
     },
-  )
+  );
   // anchor() utilities
   ;([
     ['top', theme('top')],
@@ -129,11 +136,11 @@ export default plugin(({ matchUtilities, theme }) => {
       },
     )
   })
-})
+}) satisfies PluginCreator;
 
 /* encode & decode functions to normalize anchor names for use as custom dashed idents */
 
-function encodeString(str: string) {
+export function encodeString(str: string) {
   let encoded = ''
   for (let i = 0; i < str.length; i++) {
     encoded += str.charCodeAt(i).toString(36) // Convert to base 36
@@ -141,7 +148,7 @@ function encodeString(str: string) {
   return encoded
 }
 
-function decodeString(encodedStr: string) {
+export function decodeString(encodedStr: string) {
   const decodedChars = []
   let charCode = ''
 

@@ -5,18 +5,33 @@
   "type": "module",
   "source": "index.ts",
   "exports": {
-    "types": "./dist/types/index.d.ts",
-    "require": "./dist/index.cjs",
-    "default": "./dist/index.modern.js"
+    ".": {
+      "style": "./index.css",
+      "types": "./dist/types/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.modern.js",
+      "default": "./dist/index.modern.js"
+    },
+    "./package.json": "./package.json",
+    "./index.css": "./index.css",
+    "./index": "./index.css"
   },
-  "types": "dist/types/index.d.ts",
+  "style": "index.css",
+  "types": "./dist/types/index.d.ts",
   "main": "./dist/index.cjs",
   "module": "./dist/index.module.js",
   "unpkg": "./dist/index.umd.js",
+  "files": [
+    "dist",
+    "index.css",
+    "LICENSE",
+    "README.md"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "microbundle",
-    "dev": "microbundle watch"
+    "build": "tsdown index.ts --dts",
+    "dev": "tsdown index.ts --dts --watch",
+    "prepublishOnly": "npm run build"
   },
   "publishConfig": {
     "access": "public"
@@ -28,10 +43,10 @@
   "keywords": [
     "css",
     "utility-classes",
-    "group",
-    "groups",
-    "grouping",
-    "mixins",
+    "anchor",
+    "anchors",
+    "anchor positioning",
+    "anchor-positioning",
     "plugin",
     "plugins",
     "tailwind",
@@ -43,19 +58,17 @@
     "url": "https://github.com/brandonmcconnell/tailwindcss-mixins/issues"
   },
   "homepage": "https://github.com/brandonmcconnell/tailwindcss-mixins#readme",
-  "dependencies": {
-    "@types/node": "^20.4.1"
-  },
   "devDependencies": {
-    "@types/tailwindcss": "^3.1.0",
-    "@typescript-eslint/eslint-plugin": "^5.59.8",
-    "@typescript-eslint/parser": "^5.59.8",
-    "eslint": "^8.41.0",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-prettier": "^5.0.0-alpha.1",
+    "@types/node": "^22.15.3",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "eslint": "^9.25.1",
+    "eslint-config-prettier": "^10.1.2",
+    "eslint-plugin-prettier": "^5.2.6",
     "microbundle": "^0.15.1",
     "npm-run-all": "^4.1.5",
-    "tailwindcss": "^3.4.3",
-    "typescript": "^5.1.6"
+    "tailwindcss": "^4.1.4",
+    "tsdown": "^0.10.1",
+    "typescript": "^5.8.3"
   }
 }
