@@ -1,7 +1,7 @@
 {
   "name": "tailwindcss-anchors",
   "version": "0.0.1",
-  "description": "Mixins for Tailwind CSS provides a declarative API for creating reusable groups of utilities, reducing code duplication and improving maintainability while emphasizing a utility-first approach.",
+  "description": "Anchors for Tailwind CSS provides a simple API for working with CSS anchor positioning, enabling flexible, declarative positioning relative to custom anchors.",
   "type": "module",
   "source": "index.ts",
   "exports": {
