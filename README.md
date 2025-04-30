@@ -1,13 +1,15 @@
-<h1 align="center">Anchors for Tailwind CSS</h1>
+<h5 align="center"><img src="./feature.png" width="100%" height="auto" alt="Anchors for Tailwind CSS" /><small><i>Anchors for Tailwind CSS</i></small></h5>
 
-<div align="center">
+<!--<div align="center"> I'll re-add these badges when they're working. I think they're still propagating.
 
-[![minified size](https://img.shields.io/bundlephobia/min/tailwindcss-anchors)](https://bundlephobia.com/package/tailwindcss-anchors)
-[![license](https://img.shields.io/github/license/brandonmcconnell/tailwindcss-anchors?label=license)](https://github.com/brandonmcconnell/tailwindcss-anchors/blob/main/LICENSE)
-[![version](https://img.shields.io/npm/v/tailwindcss-anchors)](https://www.npmjs.com/package/tailwindcss-anchors)
+[![minified size](https://img.shields.io/bundlephobia/min/@toolwind/anchors)](https://bundlephobia.com/package/@toolwind/anchors)
+[![license](https://img.shields.io/github/license/brandonmcconnell/@toolwind/anchors?label=license)](https://github.com/brandonmcconnell/@toolwind/anchors/blob/main/LICENSE)
+[![version](https://img.shields.io/npm/v/@toolwind/anchors)](https://www.npmjs.com/package/@toolwind/anchors)
 [![twitter](https://img.shields.io/twitter/follow/branmcconnell)](https://twitter.com/branmcconnell)
 
-</div>
+</div>-->
+
+---
 
 **Anchors for Tailwind CSS** is a plugin that brings declarative support for the CSS Anchor Positioning API to Tailwind, allowing you to define and position elements relative to custom anchors. It adds utilities for `anchor-name`, `position-anchor`, `position-area`, `anchor()` and `anchor-size()` expressions.
 
@@ -18,7 +20,7 @@ It also lays the groundwork for using View Transitions to animate any anchored e
 1. Install the plugin from npm with your preferred package manager:
     
     ```bash
-    npm install -D tailwindcss-anchors
+    npm install -D @toolwind/anchors
     ```
 2. Then include it in your Tailwind CSS or JS config file:
     
