@@ -7,10 +7,10 @@
   "exports": {
     ".": {
       "style": "./index.css",
-      "types": "./dist/types/index.d.ts",
+      "types": "./dist/index.d.ts",
       "require": "./dist/index.cjs",
-      "import": "./dist/index.modern.js",
-      "default": "./dist/index.modern.js"
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./package.json": "./package.json",
     "./index.css": "./index.css",
@@ -19,7 +19,7 @@
   "style": "index.css",
   "types": "./dist/types/index.d.ts",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.module.js",
+  "module": "./dist/index.js",
   "unpkg": "./dist/index.umd.js",
   "files": [
     "dist",
@@ -29,8 +29,8 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsdown index.ts --dts",
-    "dev": "tsdown index.ts --dts --watch",
+    "build": "tsdown index.ts --dts --format cjs,esm",
+    "dev": "tsdown index.ts --dts --watch --format cjs,esm",
     "prepublishOnly": "npm run build"
   },
   "publishConfig": {
