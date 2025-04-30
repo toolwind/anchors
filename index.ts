@@ -113,6 +113,10 @@ export default (({ matchUtilities, theme }) => {
   ;([
     ['w', 'width', theme('width')],
     ['h', 'height', theme('height')],
+    ['min-w', 'min-width', theme('minWidth')],
+    ['min-h', 'min-height', theme('minHeight')],
+    ['max-w', 'max-width', theme('maxWidth')],
+    ['max-h', 'max-height', theme('maxHeight')],
   ] as const).forEach(([propertyAbbr, property, themeValues]) => {
     ;['', 'width', 'height', 'block', 'inline', 'self-block', 'self-inline'].forEach(
       (anchorSize) => {
