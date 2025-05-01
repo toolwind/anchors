@@ -1,4 +1,5 @@
 import type { PluginCreator } from 'tailwindcss/plugin';
+import plugin from 'tailwindcss/plugin';
 
 const getStyleVarName = (modifier: string) =>
   modifier.startsWith('--') || modifier.startsWith('var(--')
@@ -12,7 +13,8 @@ const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-$
 // using empty values here so the compiler plays nice and generates the styles without values
 const EMPTY_VALUES = { values: { DEFAULT: '' } }
 
-export default (({ matchUtilities, theme }) => {
+// Explicitly type the function passed to plugin()
+const anchors = plugin((({ matchUtilities, theme }) => {
   // anchor utilities (anchor-name)
   matchUtilities(
     {
@@ -140,7 +142,10 @@ export default (({ matchUtilities, theme }) => {
       },
     )
   })
-}) satisfies PluginCreator;
+}) satisfies PluginCreator);
+
+// Cast to any to resolve d.ts generation issue
+export default anchors as any;
 
 /* encode & decode functions to normalize anchor names for use as custom dashed idents */
 
