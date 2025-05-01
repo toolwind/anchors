@@ -149,7 +149,7 @@ export default anchors as any;
 
 /* encode & decode functions to normalize anchor names for use as custom dashed idents */
 
-export function encodeString(str: string) {
+function encodeString(str: string) {
   let encoded = ''
   for (let i = 0; i < str.length; i++) {
     encoded += str.charCodeAt(i).toString(36) // Convert to base 36
@@ -157,7 +157,7 @@ export function encodeString(str: string) {
   return encoded
 }
 
-export function decodeString(encodedStr: string) {
+function decodeString(encodedStr: string) {
   const decodedChars = []
   let charCode = ''
 
