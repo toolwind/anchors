@@ -83,10 +83,10 @@ const anchors = (({ matchUtilities, theme }) => {
   );
   // anchor() utilities
   ;([
-    ['top', theme('top')],
-    ['right', theme('right')],
-    ['bottom', theme('bottom')],
-    ['left', theme('left')],
+    ['top', theme('inset')],
+    ['right', theme('inset')],
+    ['bottom', theme('inset')],
+    ['left', theme('inset')],
     ['inset', theme('inset')],
   ] as const).forEach(([property, themeValues]) => {
     ;['top', 'right', 'bottom', 'left', 'start', 'end', 'self-start', 'self-end', 'center'].forEach(
@@ -95,7 +95,7 @@ const anchors = (({ matchUtilities, theme }) => {
           {
             [`${property}-anchor-${anchorSide}`]: (offset, { modifier }) => {
               const anchorRef = modifier ? `${getStyleVarName(modifier)} ` : ''
-              const anchorFnExpr = `anchor-size(${anchorRef}${anchorSide})`
+              const anchorFnExpr = `anchor(${anchorRef}${anchorSide})`
               const value = offset ? `calc(${anchorFnExpr} + ${offset})` : anchorFnExpr
               return {
                 [property]: value,
