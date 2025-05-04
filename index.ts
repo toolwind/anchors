@@ -3,9 +3,6 @@ import { getIdentVarValue } from './utils.js';
 
 const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-${encodeString(str)}`
 
-// using empty values here so the compiler plays nice and generates the styles without values
-const EMPTY_VALUES = { values: { DEFAULT: '' } }
-
 // Explicitly type the function passed to plugin()
 const anchors = (({ matchUtilities, theme }) => {
   // anchor utilities (anchor-name)
@@ -23,7 +20,9 @@ const anchors = (({ matchUtilities, theme }) => {
       },
     },
     {
-      ...EMPTY_VALUES,
+      values: {
+        DEFAULT: '',
+      },
       modifiers: 'any',
     },
   );
@@ -97,7 +96,10 @@ const anchors = (({ matchUtilities, theme }) => {
             },
           },
           {
-            values: themeValues,
+            values: {
+              DEFAULT: '',
+              ...themeValues,
+            },
             modifiers: 'any',
           },
         )
@@ -128,7 +130,10 @@ const anchors = (({ matchUtilities, theme }) => {
             },
           },
           {
-            values: themeValues,
+            values: {
+              DEFAULT: '',
+              ...themeValues,
+            },
             modifiers: 'any',
           },
         )
