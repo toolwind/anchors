@@ -11,7 +11,8 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean) => {
     console.group({ modifier, isV4 });
     if (modifier.startsWith('--')) {
       validateVarName(modifier);
-      console.log(`${modifier}.startsWith('--')`, modifier);
+      console.log(`${modifier}.startsWith('--')`);
+      console.log(modifier);
       return modifier;
     }
     // in v4, even using `modifiers: 'any', the variable name is pre-processed (`(--x)` -> `var(--x)`)
@@ -20,7 +21,7 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean) => {
       // validate the variable name inside `var(…)`
       validateVarName(modifier.slice(4, -1));
       console.log(`${modifier}.startsWith('var(--') && ${modifier}.endsWith(')')`);
-      console.log(`%c${modifier}`, 'color: lime;' );
+      console.log(modifier);
       return modifier;
     }
     if (modifier.startsWith('(') && modifier.endsWith(')')) {
@@ -30,7 +31,7 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean) => {
       if (!isV4) {
         throw new Error(`This variable shorthand syntax is only supported in Tailwind CSS v4.0 and above: ${modifier}. In v3.x, you must use [${modifierInner}].`);
       }
-      console.log(`%c${modifier}`, 'color: lime;' );
+      console.log(modifier);
       return `var${modifierInner}`;
     }
     if (modifier.startsWith('[') && modifier.endsWith(']')) {
@@ -40,7 +41,7 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean) => {
         console.log(`${modifierInner}.startsWith('var(--') && ${modifierInner}.endsWith(')')`);
         // validate the variable name inside `var(…)`
         validateVarName(modifierInner.slice(4, -1));
-        console.log(`%c${modifier}`, 'color: lime;' );
+        console.log(modifier);
         return modifierInner;
       }
       if (modifierInner.startsWith('--')) {
@@ -49,19 +50,19 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean) => {
         if (!isV4) {
           console.log(`!isV4`);
           // TODO: TEST THIS B/C I ADDED THE () AFTER `VAR`
-          console.log(`%c${`var(${modifierInner})`}`, 'color: lime;' );
+          console.log(`var(${modifierInner})`);
           return `var(${modifierInner})`;
         }
-        console.log(`%c${modifierInner}`, 'color: lime;' );
+        console.log(modifierInner);
         return modifierInner;
       }
       // assume that the user is passing a valid value (e.g. inherit, initial, etc.)
       console.log(`(ELSE-DEPTH-1)`);
-      console.log(`%c${modifierInner}`, 'color: lime;' );
+      console.log(modifierInner);
       return modifierInner;
     }
     console.log(`(ELSE-DEPTH-0)`);
-    console.log(`%c${prefixAnchorName(modifier)}`, 'color: lime;' );
+    console.log(`${prefixAnchorName(modifier)}`);
     return prefixAnchorName(modifier);
   } finally {
     console.groupEnd();
