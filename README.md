@@ -290,6 +290,32 @@ Once an anchor has been defined, you can anchor other elements to it.
     
       For further reading: [`anchor-size#anchor-size` (MDN)](https://developer.mozilla.org/en-US/docs/Web/CSS/anchor-size#anchor-size)
 
+* ### `anchored-visible-*` (position-visibility)
+
+    Controls when the anchored element is visible.
+    - `anchored-visible-always`: Always visible (default behavior if property isn't set).
+    - `anchored-visible-anchor`: Visible only when the anchor is at least partially visible.
+    - `anchored-visible-no-overflow`: Visible only when the anchored element does not overflow the viewport.
+    - Arbitrary values: `anchored-visible-[custom-value]`
+
+* ### `try-order-*` (position-try-order)
+
+    Sets the order for trying fallback positions.
+    - `try-order-normal`: Tries fallbacks in the order they are defined (default).
+    - `try-order-w`: Prioritizes fallbacks that maximize width within the viewport.
+    - `try-order-h`: Prioritizes fallbacks that maximize height within the viewport.
+    - Arbitrary values: `try-order-[custom-value]`
+
+* ### `try-*` (position-try-fallbacks)
+
+    Defines the fallback positions to attempt.
+    - `try-none`: No fallbacks.
+    - `try-flip-x`: Flips horizontally (`flip-inline`).
+    - `try-flip-y`: Flips vertically (`flip-block`).
+    - `try-flip-s`: Flips based on writing mode start direction (`flip-start`).
+    - Position area values: `try-top`, `try-bottom-left`, `try-left-span-top`, etc. (maps to the corresponding `position-area` value, e.g., `try-top` → `top`).
+    - Arbitrary values: `try-[custom-value]`
+
 ## View Transition API Integration
 
 Every `anchored/{name}` class includes a `view-transition-name`, making your anchored elements animatable with `document.startViewTransition()`:
