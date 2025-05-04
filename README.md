@@ -44,136 +44,251 @@ It also lays the groundwork for using View Transitions to animate any anchored e
 
 ### Defining an anchor
 
-Use the `anchor/{name}` utility to define an anchor point:
+Use the `anchor/{name}` utility to define an anchor point. The CSS `anchor-name` property requires a dashed ident type (e.g. `--my-anchor`). For convenience, Anchors for Tailwind CSS automatically converts simpler ident types (e.g. `my-anchor`) names into dashed idents under the hood.
 
-```html
-<div class="anchor/my-anchor"></div>
-```
+There are several ways to define an anchor:
 
-The CSS `anchor-name` property requires a dashed ident. For convenience, Anchors for Tailwind CSS automatically converts simple names into dashed idents.
+1. **Use a non-dashed ident** (e.g. `my-anchor`)
 
-For example, the above utility generates this CSS, prefixed with `--tw-anchor_`:
+    ```html
+    <div class="anchor/my-anchor"></div>
+    ```
 
-```css
-.anchor\/my-anchor {
-  anchor-name: --tw-anchor_my-anchor;
-}
-```
+    This utlity generates the below CSS, prefixed with `--tw-anchor_` since CSS `anchor-name` property requires a dashed ident type (e.g. `--my-anchor`), as mentioned previously:
 
-If you need to use a specific dashed ident for an anchor name, the plugin will respect and preserve the original name if it encounters an ident that is already dashed.
+    ```css
+    .anchor\/my-anchor {
+      anchor-name: --tw-anchor_my-anchor;
+    }
+    ```
 
-```html
-<div class="anchor/--my-anchor"></div>
-```
+2. **Use a dashed ident** (e.g. `--my-anchor`)
 
-This utility also accepts arbitrary values, so if you want to pass a name via a CSS variable, you can do so using the square bracket syntax, like this:
+    If you explicitly specify a dashed ident as an anchor name, this utility will preserve that dashed ident so you can re-use it elsewhere more easily.
 
-```html
-<div class="[--custom-property:--my-anchor]">
-  <div class="anchor/[var(--custom-property)]"></div>
-</div>
-```
+    ```html
+    <div class="anchor/--my-anchor"></div>
+    ```
 
-🚧 Note that names passed via a custom property (square bracket syntax) resolves to a dashed ident already, as it's not possible for a plugin to read and manipulate runtime values.
+    This will generate the following CSS:
+
+    ```css
+    .anchor\/--my-anchor {
+      anchor-name: --my-anchor;
+    }
+    ```
+
+3. **Use an arbitrary value** (e.g. `[var(--x)]` or `[--my-anchor]`)
+
+    🚧 Note that names passed via an arbitrary value (square bracket syntax) must be or resolve to a dashed ident.
+
+    1. **Include a variable reference inside an arbitrary value** (e.g. `[var(--x)]`)
+
+        If you want to pass a name via a CSS variable, you can do so using an arbitrary value (square bracket syntax), like this:
+
+        ```html
+        <div class="[--x:--my-anchor]">
+          <div class="anchor/[var(--x)]"></div>
+        </div>
+        ```
+
+        This will generate the following CSS:
+
+        ```css
+        .anchor\/\[var\(--x\)\] {
+          anchor-name: var(--x);
+        }
+        .\[--x\:--my-anchor\] {
+          --x: var(--my-anchor);
+        }
+        ```
+
+        For an even simpler syntax, take a look at the variable shorthand syntax under point **4** below.
+
+    2. **Include dashed ident inside arbitrary value** (e.g. `[--my-anchor]`)
+
+        You can directly pass a dashed ident using the square bracket syntax:
+
+        ```html
+        <div class="anchor/[--my-anchor]"></div>
+        ```
+
+        This will generate the following CSS:
+
+        ```css
+        .anchor\/\[--my-anchor\] {
+          anchor-name: --my-anchor;
+        }
+        ```
+
+        However, while this approach works, it is equivalent to using the dashed ident syntax shown in example 2 (`anchor/--my-anchor`), which is simpler.
+
+        > [!WARNING]
+        > Note that Tailwind v3.x treats this syntax as differently, and will process `anchor/[--my-anchor]` as `anchor-name: var(--my-anchor)` instead of `anchor-name: --my-anchor`, as it uses this as the syntax for variable shorthand syntax. See point **4** below for more information.
+  
+4. **Pass a variable using variable shorthand syntax**
+
+    1. Tailwind CSS v4.x
+
+        In Tailwind CSS v4.x and above, you can use this shorthand below instead of passing a custom property reference to an arbitrary value (square bracket syntax).
+
+        These two utilities are equivalent, and will both produce `anchor-name: var(--x)`:
+
+        ```html
+        <div class="anchor/[var(--x)]"></div>
+        <div class="anchor/(--x)"></div>
+        ```
+
+        > [!IMPORTANT]
+        > This is not the same as `anchor/--my-anchor` or `anchor/[--my-anchor]`, as they pass the dashed ident itself directly, where the variable shorthand syntax wraps its value in `var()`.
+
+    2. Tailwind CSS v3.x (≥ 3.3 and above)
+
+        Using variable shorthand syntax in Tailwind v3.x (≥ 3.3 and above), you can use square brackets to reference CSS variables, similarly to the v4 example above, only using square brackets instead of parentheses.
+
+        These two utilities are equivalent, and will both produce `anchor-name: var(--x)`:
+
+        ```html
+        <div class="anchor/[var(--x)]"></div>
+        <div class="anchor/[--x]"></div>
+        ```
+
+        > [!IMPORTANT]
+        > This behavior differs from Tailwind CSS v4 and newer, where `anchor/[--x]` would pass the dashed ident directly. In Tailwind CSS v3, if you want to pass the dashed ident directly without wrapping it in `var()`, use the dashed ident syntax shown in example 2 above.
 
 ### Positioning relative to an anchor
 
 Once an anchor has been defined, you can anchor other elements to it.
 
-Use `anchored/{name}` to attach an element to an anchor:
+* **Anchoring:** Attach an element to an anchor
 
-```html
-<div class="anchored/my-anchor"></div>
-```
+    Use `anchored/{name}` to attach an element to an anchor:
 
-Use `anchored-{side}` to specify the position area of the anchored element. For example, `anchored-top-center` will position the element at the top center of its anchor, touching the anchored element:
+    ```html
+    <div class="anchored/my-anchor"></div>
+    ```
+    ```css
+    {
+      position-anchor: --tw-anchor_my-anchor;
+      :where(&) {
+        position: absolute;
+        view-transition-name: --tw-anchor-view-transition-313d192p322r2w3336;
+      }
+    }
+    ```
 
-```html
-<div class="anchored-top-center"></div>
-```
+* **Positioning:** Position an element relative its linked anchor
 
-Or, put both together for shorthand syntax:
+    Use `anchored-{side}` to specify the position area of the anchored element. For example, `anchored-top-center` will position the element at the top center of its anchor, touching the anchored element:
 
-```html
-<div class="anchored-top-center/my-anchor"></div>
-```
+    ```html
+    <div class="anchored-top-center"></div>
+    ```
+    ```css
+    {
+      position-area: top center;
+    }
+    ```
 
-This sets:
+* **Shorthand:** Anchor _and_ position an element relative to an anchor
 
-```css
-position-anchor: --tw-anchor_my-anchor;
-position-area: top center;
-position: absolute;
-view-transition-name: --tw-anchor-view-transition-313d192p322r2w3336;
-/* ☝️ View Transition-ready, with encoded view-transition-name */
-```
+    Use `anchored-{side}/{name}` to combine anchoring and positioning in a single utility:
 
-Both the `position` and `view-transition-name` are applied with zero specificity (via `:where()`), making them easy to overwrite with other values, if you choose. As a rule of thumb, anchored elements must use absolute or fixed positioning. This plugin defaults to `absolute` positioning, but you can add `fixed` to use fixed positioning instead.
+    ```html
+    <div class="anchored-top-center/my-anchor"></div>
+    ```
+    ```css
+    {
+      position-anchor: --tw-anchor_my-anchor;
+      position-area: top center;
+      :where(&) {
+        position: absolute;
+        view-transition-name: --tw-anchor-view-transition-313d192p322r2w3336;
+      }
+    }
+    ```
 
-This plugin strives to strike a balance between abstracting away the complexity of the CSS Anchor Positioning API and empowering developers to fully leverage it.
+> [!IMPORTANT]
+> A quick note on the use of `:where()` here:
+>
+> Using `:where()` in a CSS selector resets the specificity of the styles declared inside that selector's block to zero, meaning they hold the lowest priority in selector matching. This makes it extremely easy for you to override these values.
+> 
+> Because this plugin sets both `position` and `view-transition-name` with zero specificity, you can override both of these styles with ease without having to worry about using `!` (`!important`) on your overriding styles. making them easy to overwrite with other values, if you choose. 
+> 
+> As a rule of thumb, anchored elements must use absolute or fixed positioning. This plugin defaults to `absolute` positioning, but you can add `fixed` to use fixed positioning instead for any anchored element.
+>
+> Because of the way the `view-transition-name` value is encoded, it really shouldn't conflict with any of your other styles, but if you wish to opt of that being applied as well, you can simple add `[view-transition-name:none]` to your classes for the anchored element (alongside the `anchored` utility classes).
 
 ## Supported Utilities
 
-#### `anchor/{name}`
+* ### `anchor/{name}`
 
-Sets `anchor-name: --tw-anchor_{name}`
+    Sets `anchor-name`
 
-#### `anchored/{name}`
+* ### `anchored/{name}`
 
-Sets:
-- `position-anchor: --tw-anchor_{name}`
-- `view-transition-name` (automatically generated per anchor)
+    Sets: `position-anchor`
 
-#### `anchor-{position}`
+* ### `anchored-{position}`
 
-Sets `position-area`. Examples:
+    Sets `position-area`. Examples:
+    - `anchored-top-center` → `top center`
+    - `anchored-bottom-span-left` → `bottom span-left`
+    - `anchored-right` → `right`
 
-- `anchor-top-center` → `top center`
-- `anchor-bottom-span-left`
-- `anchor-top-right`, etc.
+* ### `{top|right|bottom|left|inset}-anchor-{side}-{offset}/{name?}`
 
-#### `{top|right|bottom|left|inset}-anchor-{side}-{offset}/{name?}`
+    Generates explicit directional positioning using `anchor()`:
 
-Generates directional offset using `anchor()`:
+    ```html
+    <div class="top-anchor-bottom"></div>
+    ```
 
-```html
-<div class="top-anchor-bottom"></div>
-```
+    Results in:
 
-Results in:
+    ```css
+    top: anchor(bottom);
+    ```
 
-```css
-top: anchor(bottom);
-```
+    With offset support:
 
-With offset support:
+    ```html
+    <div class="top-anchor-bottom-4"></div>
+    ```
 
-```html
-<div class="top-anchor-bottom-4"></div>
-```
+    ```css
+    top: calc(anchor(bottom) + 1rem);
+    ```
 
-```css
-top: calc(anchor(bottom) + 1rem); // assuming 4 = theme('spacing.4')
-```
+* ### `{w|h}-anchor{-size?}/{name?}]`
 
-#### `{w|h}-anchor{-size?}/{name?}]`
-
-Size utilities using `anchor-size()`:
-
-- **Omitting the anchor size (i.e. default size/dimension)**
-
-  `w-anchor` → `width: anchor-size(width)` 
-  If the `{size}` is omitted, the dimension defaults to the `<anchor-size>` keyterm that matches the axis of the property in which the function is included. For example, `width: anchor-size();` is equivalent to `width: anchor-size(width);`. (source: [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/anchor-size#anchor-size))
-- **Declaring the anchor-size (width/height/etc.) to use as a length**
-
-  `w-anchor-height` → `width: anchor-size(height)`
-- **Setting/omitting the anchor name**
-
-  * `w-anchor` → `width: anchor-size(width)` 
-  * `w-anchor/--name` → `width: anchor-size(--name width)` 
-  * `w-anchor/name` → `width: anchor-size(--tw-anchor_name width)` 
-
-  Specifying an `<anchor-name>` inside an `anchor-size()` function neither associates nor tethers an element to an anchor; it only defines which anchor the element's property values should be set relative to. (source: [MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/anchor-size#anchor-size))
+    Sets size utilities using `anchor-size()`:
+    
+    - **Omitting the anchor size (i.e. default size/dimension)**
+    
+      `w-anchor` → `width: anchor-size(width)`
+    
+      If a size is omitted, the size value is set to the same size on the linked anchor element for the property being set.
+    
+      For example, (`w-anchor`) would set `width: anchor-size()`, which is equivalent to `width: anchor-size(width)`, setting the width of the anchored element equal to the width of its linked anchor.
+    
+      For further reading: [`anchor-size#anchor-size` (MDN)](https://developer.mozilla.org/en-US/docs/Web/CSS/anchor-size#anchor-size)
+    - **Declaring the anchor-size (width/height/etc.) to use as a length**
+    
+      `w-anchor-height` → `width: anchor-size(height)`
+    
+      This example sets the anchored element's width to the height of its linked anchor element. This is useful when you want to create elements with dimensions based on different aspects of their anchor elements.
+    - **Setting/omitting the anchor name**
+    
+      * `w-anchor` → `width: anchor-size(width)` 
+      * `w-anchor/--name` → `width: anchor-size(--name width)` 
+      * `w-anchor/name` → `width: anchor-size(--tw-anchor_name width)` 
+    
+      Specifying an anchor name on an anchor size utility is entirely optional when setting sizes relevant to an anchored element's linked anchor element.
+      
+      However, it only defines which anchor the element's property values should be set relative to.
+    
+      For further reading: [`anchor-size#anchor-size` (MDN)](https://developer.mozilla.org/en-US/docs/Web/CSS/anchor-size#anchor-size)
 
 ## View Transition API Integration
 
@@ -181,8 +296,8 @@ Every `anchored/{name}` class includes a `view-transition-name`, making your anc
 
 ```js
 document.startViewTransition(() => {
-  el.classList.remove('anchor-top-left')
-  el.classList.add('anchor-bottom-right')
+  el.classList.remove('anchored-top-left')
+  el.classList.add('anchored-bottom-right')
 })
 ```
 
