@@ -26,25 +26,26 @@ export const normalizeAnchorName = (modifier: string) => {
 /* encode & decode functions to normalize anchor names for use in view-transition-name */
 export const encoding = {
   encode: (str: string) => {
-    let encoded = ''
-    for (let i = 0; i < str.length; i++) {
-      encoded += str.charCodeAt(i).toString(36) // Convert to base 36
+    let encoded = '';
+    for (const char of str) {
+      encoded += char.charCodeAt(0).toString(36);
     }
-    return encoded
+    return encoded;
   },
   decode: (encodedStr: string) => {
-    const decodedChars = []
-    let charCode = ''
-    for (let i = 0; i < encodedStr.length; i++) {
-      charCode += encodedStr[i]
-      if (parseInt(charCode, 36) >= 32 && parseInt(charCode, 36) <= 126) {
-        decodedChars.push(String.fromCharCode(parseInt(charCode, 36))) // Convert back to string
-        charCode = ''
+    const decodedChars = [];
+    let charCode = '';
+    for (const char of encodedStr) {
+      charCode += char;
+      const code = Number.parseInt(charCode, 36);
+      if (!isNaN(code) && code >= 32 && code <= 126) {
+        decodedChars.push(String.fromCharCode(code));
+        charCode = '';
       }
     }
-    return decodedChars.join('')
+    return decodedChars.join('');
   }
-}
+};
 
 /**
  * Position area values for use in the anchored and position-try-fallbacks utilities
@@ -73,3 +74,4 @@ export const positionAreaValues = Object.fromEntries(
     'bottom right',
   ].map((value) => [value.replace(/ /g, '-'), value])
 );
+

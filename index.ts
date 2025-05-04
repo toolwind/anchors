@@ -1,8 +1,8 @@
 import type { PluginCreator, PluginAPI } from 'tailwindcss/plugin';
-import { normalizeAnchorName, positionAreaValues, encodeString } from './utils.js';
-export { encodeString, decodeString } from './utils.js';
+import { normalizeAnchorName, positionAreaValues, encoding } from './utils.js';
+export { encoding } from './utils.js';
 
-const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-${encodeString(str)}`
+const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-${encoding.encode(str)}`
 
 const anchors = ((api: PluginAPI) => {
   const { addUtilities, matchUtilities, theme } = api;
