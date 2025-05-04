@@ -11,7 +11,8 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean) => {
     console.group({ modifier, isV4 });
     if (modifier.startsWith('--')) {
       validateVarName(modifier);
-      console.log(`${modifier}.startsWith('--')`, modifier);
+      console.log(`${modifier}.startsWith('--')`);
+      console.log(`%c${modifier}`, 'color: lime;' );
       return modifier;
     }
     // in v4, even using `modifiers: 'any', the variable name is pre-processed (`(--x)` -> `var(--x)`)
