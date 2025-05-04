@@ -4,12 +4,7 @@ export { encoding } from './utils.js';
 
 const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-${encoding.encode(str)}`
 
-const anchors = ((api: PluginAPI) => {
-  const { addUtilities, matchUtilities, theme } = api;
-
-  // Detect v4 by checking for the absence of the postcss argument
-  const isV4 = !('postcss' in api);
-
+const anchors = (({ addUtilities, matchUtilities, theme }: PluginAPI) => {
   // anchor utilities (anchor-name)
   matchUtilities(
     {
