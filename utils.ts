@@ -1,8 +1,9 @@
-import tailwindcss from 'tailwindcss';
+import twPkg from 'tailwindcss/package.json' assert { type: 'json' };
+export const isV4 = !((twPkg as any).dependencies.postcss);
 
 const prefixAnchorName = (name: string) => `--tw-anchor_${name}`;
 
-export const isPreV4 = 'postcss' in tailwindcss && tailwindcss.postcss === true;
+// Check based on devDependencies - reliable proxy for v4 vs v3
 
 const validateVarName = (name: string) => {
   if (!name.startsWith('--') || name.length <= 2) {
@@ -18,7 +19,7 @@ export const getIdentVarValue = (modifier: string, reserved: string[] = []) => {
   if (modifier.startsWith('(') && modifier.endsWith(')')) {
     const modifierInner = modifier.slice(1, -1);
     validateVarName(modifierInner);
-    if (isPreV4) {
+    if (!isV4) {
       throw new Error(`This variable shorthand syntax is only supported in Tailwind CSS v4.0 and above: ${modifier}. In v3.x, you must use [${modifierInner}].`);
     }
     return `var(${modifierInner})`;
@@ -37,7 +38,7 @@ export const getIdentVarValue = (modifier: string, reserved: string[] = []) => {
     }
     if (modifierInner.startsWith('--')) {
       validateVarName(modifierInner);
-      if (isPreV4) {
+      if (!isV4) {
         return `var(${modifierInner})`;
       }
       return modifierInner;
