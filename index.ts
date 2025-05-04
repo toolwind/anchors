@@ -1,32 +1,8 @@
 import type { PluginCreator, PluginAPI } from 'tailwindcss/plugin';
-import { getIdentVarValue } from './utils.js';
+import { normalizeAnchorName, positionAreaValues, encodeString } from './utils.js';
+export { encodeString, decodeString } from './utils.js';
 
 const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-${encodeString(str)}`
-
-const positionAreaValues = Object.fromEntries(
-  [
-    'top center',
-    'top span-left',
-    'top span-right',
-    'top',
-    'left center',
-    'left span-top',
-    'left span-bottom',
-    'left',
-    'right center',
-    'right span-top',
-    'right span-bottom',
-    'right',
-    'bottom center',
-    'bottom span-left',
-    'bottom span-right',
-    'bottom',
-    'top left',
-    'top right',
-    'bottom left',
-    'bottom right',
-  ].map((value) => [value.replace(/ /g, '-'), value])
-);
 
 const anchors = ((api: PluginAPI) => {
   const { addUtilities, matchUtilities, theme } = api;
@@ -40,7 +16,7 @@ const anchors = ((api: PluginAPI) => {
       anchor: (_, { modifier }) => {
         const styles: Record<string, string> = {};
         if (modifier) {
-          const anchorName = getIdentVarValue(modifier, isV4);
+          const anchorName = normalizeAnchorName(modifier);
           if (anchorName) {
             styles['anchor-name'] = anchorName;
           }
@@ -67,7 +43,7 @@ const anchors = ((api: PluginAPI) => {
         }
         if (modifier) {
           const viewTransitionName = generateViewTransitionId(modifier);
-          baseStyles['position-anchor'] = getIdentVarValue(modifier, isV4, ['auto']);
+          baseStyles['position-anchor'] = normalizeAnchorName(modifier);
           baseStyles[':where(&)'] = {
             position: 'absolute',
             ...(viewTransitionName && { 'view-transition-name': viewTransitionName }),
@@ -97,7 +73,7 @@ const anchors = ((api: PluginAPI) => {
         matchUtilities(
           {
             [`${property}-anchor-${anchorSide}`]: (offset, { modifier }) => {
-              const anchorRef = modifier ? `${getIdentVarValue(modifier, isV4)} ` : ''
+              const anchorRef = modifier ? `${normalizeAnchorName(modifier)} ` : ''
               const anchorFnExpr = `anchor(${anchorRef}${anchorSide})`
               const value = offset ? `calc(${anchorFnExpr} + ${offset})` : anchorFnExpr
               return {
@@ -131,7 +107,7 @@ const anchors = ((api: PluginAPI) => {
         matchUtilities(
           {
             [`${propertyAbbr}-anchor${anchorSizeUtilitySuffix}`]: (offset, { modifier }) => {
-              const anchorRef = modifier ? `${getIdentVarValue(modifier, isV4)} ` : ''
+              const anchorRef = modifier ? `${normalizeAnchorName(modifier)} ` : ''
               const anchorFnExpr = `anchor-size(${anchorRef}${anchorSize})`
               const value = offset ? `calc(${anchorFnExpr} + ${offset})` : anchorFnExpr
               return {
@@ -217,27 +193,3 @@ const anchors = ((api: PluginAPI) => {
 
 // Cast to any to resolve d.ts generation issue
 export default anchors as any;
-
-/* encode & decode functions to normalize anchor names for use as custom dashed idents */
-
-function encodeString(str: string) {
-  let encoded = ''
-  for (let i = 0; i < str.length; i++) {
-    encoded += str.charCodeAt(i).toString(36) // Convert to base 36
-  }
-  return encoded
-}
-
-function decodeString(encodedStr: string) {
-  const decodedChars = []
-  let charCode = ''
-
-  for (let i = 0; i < encodedStr.length; i++) {
-    charCode += encodedStr[i]
-    if (parseInt(charCode, 36) >= 32 && parseInt(charCode, 36) <= 126) {
-      decodedChars.push(String.fromCharCode(parseInt(charCode, 36)))
-      charCode = ''
-    }
-  }
-  return decodedChars.join('')
-}
