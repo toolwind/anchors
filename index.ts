@@ -4,7 +4,7 @@ import { getIdentVarValue } from './utils.js';
 const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-${encodeString(str)}`
 
 // Explicitly type the function passed to plugin()
-const anchors = (({ matchUtilities, theme }) => {
+const anchors = (({ addUtilities, matchUtilities, theme }) => {
   // anchor utilities (anchor-name)
   matchUtilities(
     {
@@ -139,6 +139,21 @@ const anchors = (({ matchUtilities, theme }) => {
         )
       },
     )
+  })
+  // anchor-center utilities
+  ;([
+    ['justify-self', 'justify-self'],
+    ['self', 'align-self'],
+    ['justify-items', 'justify-items'],
+    ['items', 'align-items'],
+    ['place-items', 'place-items'],
+    ['place-self', 'place-self'],
+  ] as const).forEach(([propertyAbbr, property]) => {
+    addUtilities({
+      [`.${propertyAbbr}-anchor`]: {
+        [property]: 'anchor-center',
+      }
+    })
   })
 }) satisfies PluginCreator;
 
