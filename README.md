@@ -11,7 +11,8 @@
 
 ---
 
-**Anchors for Tailwind CSS** is a plugin that brings declarative support for the CSS Anchor Positioning API to Tailwind, allowing you to define and position elements relative to custom anchors. It adds utilities for `anchor-name`, `position-anchor`, `position-area`, `anchor()` and `anchor-size()` expressions.
+**Anchors for Tailwind CSS** is a plugin that brings declarative support for the **CSS Anchor Positioning API** to Tailwind CSS. It provides utilities for defining anchors (`anchor-name`) and positioning elements relative to them (`position-anchor`, `position-area`, `anchor()`, `anchor-size()`), as well as utilities for advanced features like conditional visibility (`position-visibility`) and fallback positioning (`position-try-order`, `position-try-fallbacks`).
+
 
 It also lays the groundwork for using View Transitions to animate any anchored elements, which would require separate JS (for now 👀).
 
