@@ -319,13 +319,6 @@ This animates position shifts smoothly using the browser-native View Transitions
 - [The Anchor Tool](https://anchor-tool.com/) 👈 probably the best way to get a real fast introduction to the CSS Anchor Positioning API, how it works, and how helpful it can be ✨
 - [@Una](https://github.com/una)! I've never met anyone more fired up about CSS Anchor Positioning than Una Kravets, so definitely check out some of the things she's posted about it. I'm not 100% certain, but I think she may have actually created the [The Anchor Tool](https://anchor-tool.com/) mentioned above.
 
-## Coming soon 👀🤞
-
-Some relevant features that are not part of this plugin yet are:
-- `anchor-center`
-- `position-try-order` | `position-try-fallbacks` | `position-try`
-- `position-visibility`
-
 ## If you liked this plugin...
 
 Check out more by [@branmcconnell](https://github.com/brandonmcconnell):
