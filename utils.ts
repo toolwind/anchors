@@ -7,36 +7,48 @@ const validateVarName = (name: string) => {
 }
 
 export const normalizeAnchorName = (modifier: string, isV4: boolean) => {
-  if (modifier.startsWith('--')) {
-    validateVarName(modifier);
-    return modifier;
-  }
-  if (modifier.startsWith('(') && modifier.endsWith(')')) {
-    const modifierInner = modifier.slice(1, -1);
-    validateVarName(modifierInner);
-    if (!isV4) {
-      throw new Error(`This variable shorthand syntax is only supported in Tailwind CSS v4.0 and above: ${modifier}. In v3.x, you must use [${modifierInner}].`);
+  try {
+    console.group({ modifier, isV4 });
+    if (modifier.startsWith('--')) {
+      validateVarName(modifier);
+      console.log(`(${modifier}).startsWith('--')`, modifier);
+      return modifier;
     }
-    return `var(${modifierInner})`;
-  }
-  if (modifier.startsWith('[') && modifier.endsWith(']')) {
-    const modifierInner = modifier.slice(1, -1);
-    if (modifierInner.startsWith('var(--') && modifierInner.endsWith(')')) {
-      // validate the variable name inside `var(…)`
-      validateVarName(modifierInner.slice(4, -1));
-      return modifierInner;
-    }
-    if (modifierInner.startsWith('--')) {
+    if (modifier.startsWith('(') && modifier.endsWith(')')) {
+      const modifierInner = modifier.slice(1, -1);
       validateVarName(modifierInner);
       if (!isV4) {
-        return `var(${modifierInner})`;
+        throw new Error(`This variable shorthand syntax is only supported in Tailwind CSS v4.0 and above: ${modifier}. In v3.x, you must use [${modifierInner}].`);
       }
+      console.log(`(${modifier}).startsWith('(') && (${modifier}).endsWith(')')`, modifier);
+      return `var(${modifierInner})`;
+    }
+    if (modifier.startsWith('[') && modifier.endsWith(']')) {
+      const modifierInner = modifier.slice(1, -1);
+      if (modifierInner.startsWith('var(--') && modifierInner.endsWith(')')) {
+        // validate the variable name inside `var(…)`
+        validateVarName(modifierInner.slice(4, -1));
+        console.log(`(${modifier}).startsWith('[') && (${modifier}).endsWith(']') :: (${modifierInner}).startsWith('var(--') && (${modifierInner}).endsWith(')')`, modifier);
+        return modifierInner;
+      }
+      if (modifierInner.startsWith('--')) {
+        validateVarName(modifierInner);
+        if (!isV4) {
+          console.log(`(${modifierInner}).startsWith('--') :: !isV4`, `var(${modifierInner})`);
+          return `var(${modifierInner})`;
+        }
+        console.log(`(${modifierInner}).startsWith('--') :: isV4`, modifier);
+        return modifierInner;
+      }
+      // assume that the user is passing a valid value (e.g. inherit, initial, etc.)
+      console.log(`(${modifier}).startsWith('[') && (${modifier}).endsWith(']') (FALLBACK)`, modifier);
       return modifierInner;
     }
-    // assume that the user is passing a valid value (e.g. inherit, initial, etc.)
-    return modifierInner;
+    console.log(`prefixAnchorName`, prefixAnchorName(modifier));
+    return prefixAnchorName(modifier);
+  } finally {
+    console.groupEnd();
   }
-  return prefixAnchorName(modifier);
 }
 
 // encode & decode functions to normalize anchor names for use in view-transition-name
