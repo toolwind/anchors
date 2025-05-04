@@ -1,11 +1,5 @@
 import type { PluginCreator } from 'tailwindcss/plugin';
-
-const getStyleVarName = (modifier: string) =>
-  modifier.startsWith('--') || modifier.startsWith('var(--')
-    ? modifier
-    : modifier.startsWith('[var(--')
-      ? modifier.slice(1, -1)
-      : `--tw-anchor_${modifier}`
+import { getIdentVarValue } from './utils.js';
 
 const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-${encodeString(str)}`
 
@@ -20,7 +14,7 @@ const anchors = (({ matchUtilities, theme }) => {
       anchor: (_, { modifier }) => {
         const styles: Record<string, string> = {};
         if (modifier) {
-          const anchorName = getStyleVarName(modifier);
+          const anchorName = getIdentVarValue(modifier);
           if (anchorName) {
             styles['anchor-name'] = anchorName;
           }
@@ -45,7 +39,7 @@ const anchors = (({ matchUtilities, theme }) => {
         }
         if (modifier) {
           const viewTransitionName = generateViewTransitionId(modifier);
-          baseStyles['position-anchor'] = getStyleVarName(modifier);
+          baseStyles['position-anchor'] = getIdentVarValue(modifier, ['auto']);
           baseStyles[':where(&)'] = {
             position: 'absolute',
             ...(viewTransitionName && { 'view-transition-name': viewTransitionName }),
@@ -94,7 +88,7 @@ const anchors = (({ matchUtilities, theme }) => {
         matchUtilities(
           {
             [`${property}-anchor-${anchorSide}`]: (offset, { modifier }) => {
-              const anchorRef = modifier ? `${getStyleVarName(modifier)} ` : ''
+              const anchorRef = modifier ? `${getIdentVarValue(modifier)} ` : ''
               const anchorFnExpr = `anchor(${anchorRef}${anchorSide})`
               const value = offset ? `calc(${anchorFnExpr} + ${offset})` : anchorFnExpr
               return {
@@ -125,7 +119,7 @@ const anchors = (({ matchUtilities, theme }) => {
         matchUtilities(
           {
             [`${propertyAbbr}-anchor${anchorSizeUtilitySuffix}`]: (offset, { modifier }) => {
-              const anchorRef = modifier ? `${getStyleVarName(modifier)} ` : ''
+              const anchorRef = modifier ? `${getIdentVarValue(modifier)} ` : ''
               const anchorFnExpr = `anchor-size(${anchorRef}${anchorSize})`
               const value = offset ? `calc(${anchorFnExpr} + ${offset})` : anchorFnExpr
               return {
