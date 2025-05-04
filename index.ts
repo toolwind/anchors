@@ -155,6 +155,22 @@ const anchors = (({ addUtilities, matchUtilities, theme }) => {
       }
     })
   })
+  // position-visibility utilities
+  matchUtilities(
+    {
+      'anchored-visible': (value) => ({
+        'position-visibility': value,
+      }),
+    },
+    {
+      values: {
+        always: 'always',
+        anchor: 'anchors-visible',
+        'no-overflow': 'no-overflow',
+        // 'valid': 'anchors-valid', // ⚠️ this is not supported anywhere yet
+      },
+    },
+  )
 }) satisfies PluginCreator;
 
 // Cast to any to resolve d.ts generation issue
