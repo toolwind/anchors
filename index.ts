@@ -177,6 +177,38 @@ const anchors = (({ addUtilities, matchUtilities, theme }) => {
       },
     },
   )
+  // position-try-order utilities
+  matchUtilities(
+    {
+      'try-order': (value) => ({
+        'position-try-order': value,
+      }),
+    },
+    {
+      values: {
+        normal: 'normal',
+        w: 'most-width',
+        h: 'most-height',
+      },
+    },
+  )
+  // position-try-fallbacks utilities
+  matchUtilities(
+    {
+      'try': (value) => ({
+        'position-try-fallbacks': value,
+      }),
+    },
+    {
+      values: {
+        none: 'none',
+        'flip-x': 'flip-inline',
+        'flip-y': 'flip-block',
+        'flip-s': 'flip-start',
+        ...positionAreaValues,
+      },
+    },
+  )
 }) satisfies PluginCreator;
 
 // Cast to any to resolve d.ts generation issue
