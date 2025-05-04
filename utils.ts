@@ -1,29 +1,19 @@
-const prefixAnchorName = (name: string) => `--tw-anchor_${name}`;
-
-/**
- * Normalize the anchor name to a valid dashed identifier
- * @param modifier - The anchor name to normalize
- * @returns The normalized anchor name
- */
+// Normalize the anchor name to a valid dashed identifier
 export const normalizeAnchorName = (modifier: string) => {
-  /* cases to preserve the passed value as is: */
+  // cases to preserve the passed value as is:
   if (
-    /* 1. modifier is already an explicit custom ident, return it */
+    // 1. modifier is already an explicit custom ident, return it
     (modifier.startsWith('--') && modifier.length > 2) ||
-    /* 2. modifier is a function call or array access, return it */
+    // 2. modifier is a function call or array access, return it
     (([['(',')'],['[',']']] as const).some(([start, end]) => modifier.startsWith(start) && modifier.endsWith(end)))
   ) {
     return modifier;
   }
-  /**
-   * otherwise, assume the user knows what they're doing.
-   * 1. treat the value as a the custom-ident
-   * 2. convert it to a valid dashed identifier
-   */
+  // otherwise, treat the value as a custom-ident and convert it to a dashed ident
   return `--tw-anchor_${modifier}`;
 }
 
-/* encode & decode functions to normalize anchor names for use in view-transition-name */
+// encode & decode functions to normalize anchor names for use in view-transition-name
 export const encoding = {
   encode: (str: string) => {
     let encoded = '';
@@ -47,9 +37,7 @@ export const encoding = {
   }
 };
 
-/**
- * Position area values for use in the anchored and position-try-fallbacks utilities
- */
+// position area values for use in anchored and position-try-fallbacks utilities
 export const positionAreaValues = Object.fromEntries(
   [
     'top center',
