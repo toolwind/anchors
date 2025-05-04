@@ -4,14 +4,19 @@ export { encoding } from './utils.js';
 
 const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-${encoding.encode(str)}`
 
-const anchors = (({ addUtilities, matchUtilities, theme }: PluginAPI) => {
+const anchors = ((api: PluginAPI) => {
+  const { addUtilities, matchUtilities, theme } = api;
+
+  // Detect v4 by checking for the absence of the postcss argument
+  const isV4 = !('postcss' in api);
+
   // anchor utilities (anchor-name)
   matchUtilities(
     {
       anchor: (_, { modifier }) => {
         const styles: Record<string, string> = {};
         if (modifier) {
-          const anchorName = normalizeAnchorName(modifier);
+          const anchorName = normalizeAnchorName(modifier, isV4);
           if (anchorName) {
             styles['anchor-name'] = anchorName;
           }
@@ -38,7 +43,7 @@ const anchors = (({ addUtilities, matchUtilities, theme }: PluginAPI) => {
         }
         if (modifier) {
           const viewTransitionName = generateViewTransitionId(modifier);
-          baseStyles['position-anchor'] = normalizeAnchorName(modifier);
+          baseStyles['position-anchor'] = normalizeAnchorName(modifier, isV4);
           baseStyles[':where(&)'] = {
             position: 'absolute',
             ...(viewTransitionName && { 'view-transition-name': viewTransitionName }),
@@ -68,7 +73,7 @@ const anchors = (({ addUtilities, matchUtilities, theme }: PluginAPI) => {
         matchUtilities(
           {
             [`${property}-anchor-${anchorSide}`]: (offset, { modifier }) => {
-              const anchorRef = modifier ? `${normalizeAnchorName(modifier)} ` : ''
+              const anchorRef = modifier ? `${normalizeAnchorName(modifier, isV4)} ` : ''
               const anchorFnExpr = `anchor(${anchorRef}${anchorSide})`
               const value = offset ? `calc(${anchorFnExpr} + ${offset})` : anchorFnExpr
               return {
@@ -102,7 +107,7 @@ const anchors = (({ addUtilities, matchUtilities, theme }: PluginAPI) => {
         matchUtilities(
           {
             [`${propertyAbbr}-anchor${anchorSizeUtilitySuffix}`]: (offset, { modifier }) => {
-              const anchorRef = modifier ? `${normalizeAnchorName(modifier)} ` : ''
+              const anchorRef = modifier ? `${normalizeAnchorName(modifier, isV4)} ` : ''
               const anchorFnExpr = `anchor-size(${anchorRef}${anchorSize})`
               const value = offset ? `calc(${anchorFnExpr} + ${offset})` : anchorFnExpr
               return {

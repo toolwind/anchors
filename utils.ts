@@ -1,16 +1,42 @@
-// Normalize the anchor name to a valid dashed identifier
-export const normalizeAnchorName = (modifier: string) => {
-  // cases to preserve the passed value as is:
-  if (
-    // 1. modifier is already an explicit custom ident, return it
-    (modifier.startsWith('--') && modifier.length > 2) ||
-    // 2. modifier is a function call or array access, return it
-    (([['(',')'],['[',']']] as const).some(([start, end]) => modifier.startsWith(start) && modifier.endsWith(end)))
-  ) {
+const prefixAnchorName = (name: string) => `--tw-anchor_${name}`;
+
+const validateVarName = (name: string) => {
+  if (!name.startsWith('--') || name.length <= 2) {
+    throw new Error(`Invalid variable name: ${name}`);
+  }
+}
+
+export const normalizeAnchorName = (modifier: string, isV4: boolean) => {
+  if (modifier.startsWith('--')) {
+    validateVarName(modifier);
     return modifier;
   }
-  // otherwise, treat the value as a custom-ident and convert it to a dashed ident
-  return `--tw-anchor_${modifier}`;
+  if (modifier.startsWith('(') && modifier.endsWith(')')) {
+    const modifierInner = modifier.slice(1, -1);
+    validateVarName(modifierInner);
+    if (!isV4) {
+      throw new Error(`This variable shorthand syntax is only supported in Tailwind CSS v4.0 and above: ${modifier}. In v3.x, you must use [${modifierInner}].`);
+    }
+    return `var(${modifierInner})`;
+  }
+  if (modifier.startsWith('[') && modifier.endsWith(']')) {
+    const modifierInner = modifier.slice(1, -1);
+    if (modifierInner.startsWith('var(--') && modifierInner.endsWith(')')) {
+      // validate the variable name inside `var(…)`
+      validateVarName(modifierInner.slice(4, -1));
+      return modifierInner;
+    }
+    if (modifierInner.startsWith('--')) {
+      validateVarName(modifierInner);
+      if (!isV4) {
+        return `var(${modifierInner})`;
+      }
+      return modifierInner;
+    }
+    // assume that the user is passing a valid value (e.g. inherit, initial, etc.)
+    return modifierInner;
+  }
+  return prefixAnchorName(modifier);
 }
 
 // encode & decode functions to normalize anchor names for use in view-transition-name
