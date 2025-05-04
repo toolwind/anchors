@@ -3,6 +3,31 @@ import { getIdentVarValue } from './utils.js';
 
 const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-${encodeString(str)}`
 
+const positionAreaValues = Object.fromEntries(
+  [
+    'top center',
+    'top span-left',
+    'top span-right',
+    'top',
+    'left center',
+    'left span-top',
+    'left span-bottom',
+    'left',
+    'right center',
+    'right span-top',
+    'right span-bottom',
+    'right',
+    'bottom center',
+    'bottom span-left',
+    'bottom span-right',
+    'bottom',
+    'top left',
+    'top right',
+    'bottom left',
+    'bottom right',
+  ].map((value) => [value.replace(/ /g, '-'), value])
+);
+
 // Explicitly type the function passed to plugin()
 const anchors = (({ addUtilities, matchUtilities, theme }) => {
   // anchor utilities (anchor-name)
@@ -49,27 +74,8 @@ const anchors = (({ addUtilities, matchUtilities, theme }) => {
     },
     {
       values: {
-        DEFAULT: '',
-        'top-center': 'top center',
-        'top-span-left': 'top span-left',
-        'top-span-right': 'top span-right',
-        top: 'top',
-        'left-center': 'left center',
-        'left-span-top': 'left span-top',
-        'left-span-bottom': 'left span-bottom',
-        left: 'left',
-        'right-center': 'right center',
-        'right-span-top': 'right span-top',
-        'right-span-bottom': 'right span-bottom',
-        right: 'right',
-        'bottom-center': 'bottom center',
-        'bottom-span-left': 'bottom span-left',
-        'bottom-span-right': 'bottom span-right',
-        bottom: 'bottom',
-        'top-left': 'top left',
-        'top-right': 'top right',
-        'bottom-left': 'bottom left',
-        'bottom-right': 'bottom right',
+        DEFAULT: '', // will be '' if only a name is being set
+        ...positionAreaValues,
       },
       modifiers: 'any',
     },
