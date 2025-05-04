@@ -1,9 +1,4 @@
-import twPkg from 'tailwindcss/package.json' assert { type: 'json' };
-export const isV4 = !((twPkg as any).dependencies.postcss);
-
 const prefixAnchorName = (name: string) => `--tw-anchor_${name}`;
-
-// Check based on devDependencies - reliable proxy for v4 vs v3
 
 const validateVarName = (name: string) => {
   if (!name.startsWith('--') || name.length <= 2) {
@@ -11,7 +6,7 @@ const validateVarName = (name: string) => {
   }
 }
 
-export const getIdentVarValue = (modifier: string, reserved: string[] = []) => {
+export const getIdentVarValue = (modifier: string, isV4: boolean, reserved: string[] = []) => {
   if (modifier.startsWith('--')) {
     validateVarName(modifier);
     return modifier;

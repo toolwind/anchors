@@ -1,4 +1,4 @@
-import type { PluginCreator } from 'tailwindcss/plugin';
+import type { PluginCreator, PluginAPI } from 'tailwindcss/plugin';
 import { getIdentVarValue } from './utils.js';
 
 const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-${encodeString(str)}`
@@ -28,15 +28,19 @@ const positionAreaValues = Object.fromEntries(
   ].map((value) => [value.replace(/ /g, '-'), value])
 );
 
-// Explicitly type the function passed to plugin()
-const anchors = (({ addUtilities, matchUtilities, theme }) => {
+const anchors = ((api: PluginAPI) => {
+  const { addUtilities, matchUtilities, theme } = api;
+
+  // Detect v4 by checking for the absence of the postcss argument
+  const isV4 = !('postcss' in api);
+
   // anchor utilities (anchor-name)
   matchUtilities(
     {
       anchor: (_, { modifier }) => {
         const styles: Record<string, string> = {};
         if (modifier) {
-          const anchorName = getIdentVarValue(modifier);
+          const anchorName = getIdentVarValue(modifier, isV4);
           if (anchorName) {
             styles['anchor-name'] = anchorName;
           }
@@ -63,7 +67,7 @@ const anchors = (({ addUtilities, matchUtilities, theme }) => {
         }
         if (modifier) {
           const viewTransitionName = generateViewTransitionId(modifier);
-          baseStyles['position-anchor'] = getIdentVarValue(modifier, ['auto']);
+          baseStyles['position-anchor'] = getIdentVarValue(modifier, isV4, ['auto']);
           baseStyles[':where(&)'] = {
             position: 'absolute',
             ...(viewTransitionName && { 'view-transition-name': viewTransitionName }),
@@ -93,7 +97,7 @@ const anchors = (({ addUtilities, matchUtilities, theme }) => {
         matchUtilities(
           {
             [`${property}-anchor-${anchorSide}`]: (offset, { modifier }) => {
-              const anchorRef = modifier ? `${getIdentVarValue(modifier)} ` : ''
+              const anchorRef = modifier ? `${getIdentVarValue(modifier, isV4)} ` : ''
               const anchorFnExpr = `anchor(${anchorRef}${anchorSide})`
               const value = offset ? `calc(${anchorFnExpr} + ${offset})` : anchorFnExpr
               return {
@@ -127,7 +131,7 @@ const anchors = (({ addUtilities, matchUtilities, theme }) => {
         matchUtilities(
           {
             [`${propertyAbbr}-anchor${anchorSizeUtilitySuffix}`]: (offset, { modifier }) => {
-              const anchorRef = modifier ? `${getIdentVarValue(modifier)} ` : ''
+              const anchorRef = modifier ? `${getIdentVarValue(modifier, isV4)} ` : ''
               const anchorFnExpr = `anchor-size(${anchorRef}${anchorSize})`
               const value = offset ? `calc(${anchorFnExpr} + ${offset})` : anchorFnExpr
               return {
