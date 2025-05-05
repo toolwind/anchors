@@ -40,32 +40,34 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) 
     if (modifier.startsWith('[') && modifier.endsWith(']')) {
       console.log(`${modifier}.startsWith('[') && ${modifier}.endsWith(']')`);
       let modifierInner = modifier.slice(1, -1);
-      // Apply escape function to the inner content
-      modifierInner = e(modifierInner);
+      // Apply escape function to the inner content first
+      const escapedInner = e(modifierInner);
+      console.log(`Escaped inner: "${escapedInner}"`); // Log escaped value
 
-      if (modifierInner.startsWith('var(--') && modifierInner.endsWith(')')) {
-        console.log(`${modifierInner}.startsWith('var(--') && ${modifierInner}.endsWith(')')`);
+      // Now check the structure of the *escaped* inner value
+      if (escapedInner.startsWith('var(--') && escapedInner.endsWith(')')) {
+        console.log(`${escapedInner}.startsWith('var(--') && ${escapedInner}.endsWith(')')`);
         // validate the variable name inside `var(…)`
-        validateVarName(modifierInner.slice(4, -1));
-        console.log(modifier);
-        return modifierInner;
+        validateVarName(escapedInner.slice(4, -1));
+        console.log(escapedInner);
+        return escapedInner;
       }
-      if (modifierInner.startsWith('--')) {
-        console.log(`${modifierInner}.startsWith('--')`);
-        validateVarName(modifierInner);
+      if (escapedInner.startsWith('--')) {
+        console.log(`${escapedInner}.startsWith('--')`);
+        validateVarName(escapedInner);
         if (!isV4) {
           console.log(`!isV4`);
           // TODO: TEST THIS B/C I ADDED THE () AFTER `VAR`
-          console.log(`var(${modifierInner})`);
-          return `var(${modifierInner})`;
+          console.log(`var(${escapedInner})`);
+          return `var(${escapedInner})`;
         }
-        console.log(modifierInner);
-        return modifierInner;
+        console.log(escapedInner);
+        return escapedInner;
       }
       // assume that the user is passing a valid value (e.g. inherit, initial, etc.)
       console.log(`(ELSE-DEPTH-1)`);
-      console.log(modifierInner);
-      return modifierInner; // Return escaped inner value
+      console.log(escapedInner); // Log the escaped inner value
+      return escapedInner; // Return the ESCAPED inner value
     }
     console.log(`(ELSE-DEPTH-0)`);
     // Apply escape function before prefixing
