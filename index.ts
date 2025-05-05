@@ -1,5 +1,5 @@
 import type { PluginCreator, PluginAPI } from 'tailwindcss/plugin';
-import { normalizeAnchorName, positionAreaValues, encoding } from './utils.js';
+import { normalizeAnchorName, positionAreaValues, encoding, type E_Type } from './utils.js';
 export { encoding } from './utils.js';
 
 const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-${encoding.encode(str)}`
@@ -7,10 +7,11 @@ const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-$
 const anchors = ((api: PluginAPI) => {
   const { addUtilities, matchUtilities, theme } = api;
 
-  console.error({ api, e: 'e' in api ? api.e : undefined });
-
-  // Detect v4 by checking for the absence of the postcss argument
+  // detect v4 by checking for the absence of the postcss argument
   const isV4 = !('postcss' in api);
+
+  // using a plain (str => str) for v4 instead of escaping because v4 pre-escapes
+  const e: E_Type = 'e' in api ? (api.e as E_Type) : (str => str);
 
   // anchor utilities (anchor-name)
   matchUtilities(
@@ -18,7 +19,7 @@ const anchors = ((api: PluginAPI) => {
       anchor: (_, { modifier }) => {
         const styles: Record<string, string> = {};
         if (modifier) {
-          const anchorName = normalizeAnchorName(modifier, isV4);
+          const anchorName = normalizeAnchorName(modifier, isV4, e);
           if (anchorName) {
             styles['anchor-name'] = anchorName;
           }
@@ -45,7 +46,7 @@ const anchors = ((api: PluginAPI) => {
         }
         if (modifier) {
           const viewTransitionName = generateViewTransitionId(modifier);
-          baseStyles['position-anchor'] = normalizeAnchorName(modifier, isV4);
+          baseStyles['position-anchor'] = normalizeAnchorName(modifier, isV4, e);
           baseStyles[':where(&)'] = {
             position: 'absolute',
             ...(viewTransitionName && { 'view-transition-name': viewTransitionName }),
@@ -75,7 +76,7 @@ const anchors = ((api: PluginAPI) => {
         matchUtilities(
           {
             [`${property}-anchor-${anchorSide}`]: (offset, { modifier }) => {
-              const anchorRef = modifier ? `${normalizeAnchorName(modifier, isV4)} ` : ''
+              const anchorRef = modifier ? `${normalizeAnchorName(modifier, isV4, e)} ` : ''
               const anchorFnExpr = `anchor(${anchorRef}${anchorSide})`
               const value = offset ? `calc(${anchorFnExpr} + ${offset})` : anchorFnExpr
               return {
@@ -109,7 +110,7 @@ const anchors = ((api: PluginAPI) => {
         matchUtilities(
           {
             [`${propertyAbbr}-anchor${anchorSizeUtilitySuffix}`]: (offset, { modifier }) => {
-              const anchorRef = modifier ? `${normalizeAnchorName(modifier, isV4)} ` : ''
+              const anchorRef = modifier ? `${normalizeAnchorName(modifier, isV4, e)} ` : ''
               const anchorFnExpr = `anchor-size(${anchorRef}${anchorSize})`
               const value = offset ? `calc(${anchorFnExpr} + ${offset})` : anchorFnExpr
               return {

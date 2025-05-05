@@ -6,7 +6,10 @@ const validateVarName = (name: string) => {
   }
 }
 
-export const normalizeAnchorName = (modifier: string, isV4: boolean) => {
+export type E_Type = ((className: string) => string);
+
+export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) => {
+  modifier = e(modifier).trim();
   try {
     console.group({ modifier, isV4 });
     if (modifier.startsWith('--')) {
