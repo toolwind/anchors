@@ -9,7 +9,6 @@ const validateVarName = (name: string) => {
 export type E_Type = ((className: string) => string);
 
 export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) => {
-  modifier = e(modifier).trim();
   try {
     console.group({ modifier, isV4 });
     if (modifier.startsWith('--')) {
@@ -39,7 +38,10 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) 
     }
     if (modifier.startsWith('[') && modifier.endsWith(']')) {
       console.log(`${modifier}.startsWith('[') && ${modifier}.endsWith(']')`);
-      const modifierInner = modifier.slice(1, -1);
+      let modifierInner = modifier.slice(1, -1);
+      // Apply escape function to the inner content
+      modifierInner = e(modifierInner); 
+
       if (modifierInner.startsWith('var(--') && modifierInner.endsWith(')')) {
         console.log(`${modifierInner}.startsWith('var(--') && ${modifierInner}.endsWith(')')`);
         // validate the variable name inside `var(…)`
@@ -62,11 +64,14 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) 
       // assume that the user is passing a valid value (e.g. inherit, initial, etc.)
       console.log(`(ELSE-DEPTH-1)`);
       console.log(modifierInner);
-      return modifierInner;
+      return modifierInner; // Return escaped inner value
     }
     console.log(`(ELSE-DEPTH-0)`);
-    console.log(`${prefixAnchorName(modifier)}`);
-    return prefixAnchorName(modifier);
+    // Apply escape function before prefixing
+    const escapedModifier = e(modifier);
+    const prefixedName = prefixAnchorName(escapedModifier);
+    console.log(`${prefixedName}`); // Log prefixed name
+    return prefixedName;
   } finally {
     console.groupEnd();
   }
