@@ -16,27 +16,10 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) 
   try {
     // --- V4 LOGIC ---
     if (isV4) {
-      console.log("V4 Path");
-      // V4 pre-processes/escapes, so we check the processed value directly.
-      // Check if it's already a valid variable or var() function.
-      if (modifier.startsWith('--')) {
-        validateVarName(modifier);
-        console.log("V4: Direct CSS dashed ident:", modifier);
+      if (['--', '[', '('].some(startChar => modifier.startsWith(startChar))) {
         return modifier;
       }
-      if (modifier.startsWith('var(--') && modifier.endsWith(')')) {
-        validateVarName(modifier.slice(4, -1));
-        console.log("V4: var() function:", modifier);
-        return modifier;
-      }
-      // Otherwise, assume it's a plain name needing prefixing.
-      // For V4, `e` should be the identity function `(str => str)`.
-      console.log(`V4: Plain name -> Prefixed: ${modifier}`);
       return prefixAnchorName(modifier);
-      const escapedForV4 = e(modifier);
-      const prefixedName = prefixAnchorName(escapedForV4);
-      console.log(`V4: Plain name -> Prefixed: ${prefixedName}`);
-      return prefixedName;
     }
     // --- V3 LOGIC ---
     else {
