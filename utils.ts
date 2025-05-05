@@ -31,7 +31,9 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) 
       }
       // Otherwise, assume it's a plain name needing prefixing.
       // For V4, `e` should be the identity function `(str => str)`.
-      // const escapedForV4 = e(modifier);
+      console.log(`V4: Plain name -> Prefixed: ${modifier}`);
+      return prefixAnchorName(modifier);
+      const escapedForV4 = e(modifier);
       const prefixedName = prefixAnchorName(escapedForV4);
       console.log(`V4: Plain name -> Prefixed: ${prefixedName}`);
       return prefixedName;
