@@ -11,7 +11,7 @@ const anchors = ((api: PluginAPI) => {
   const isV4 = !('postcss' in api);
 
   // using a plain (str => str) for v4 instead of escaping because v4 pre-escapes
-  const e: E_Type = (str: string) => ('e' in api ? (api.e as E_Type)(str) : ((x: string) => x)(str)).trim();
+  const e: E_Type = 'e' in api ? (api.e as E_Type) : (str => str);
 
   // anchor utilities (anchor-name)
   matchUtilities(
