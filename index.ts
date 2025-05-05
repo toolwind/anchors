@@ -7,6 +7,8 @@ const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-$
 const anchors = ((api: PluginAPI) => {
   const { addUtilities, matchUtilities, theme } = api;
 
+  console.error({ api, e: 'e' in api ? api.e : undefined });
+
   // Detect v4 by checking for the absence of the postcss argument
   const isV4 = !('postcss' in api);
 
