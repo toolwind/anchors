@@ -27,6 +27,7 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) 
   try {
     // --- V4 LOGIC ---
     if (isV4) {
+      console.log("test");
       if (
         reservedNames.some(name => modifier === name) ||
         modifier.startsWith('--') ||
