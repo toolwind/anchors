@@ -10,8 +10,8 @@ export type E_Type = ((className: string) => string);
 
 export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) => {
   // Trim leading/trailing whitespace - potentially needed for v4 pre-processed values
-  const processedModifier = modifier.trim();
-  console.group({ modifier: `"${modifier}" (original)`, processedModifier: `"${processedModifier}"`, isV4 });
+  console.group({ rawModifier: `"${modifier}" (original)`, modifier: `"${modifier.trim()}"`, isV4 });
+  modifier = modifier.trim();
 
   try {
     // --- V4 LOGIC ---
@@ -19,19 +19,19 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) 
       console.log("V4 Path");
       // V4 pre-processes/escapes, so we check the processed value directly.
       // Check if it's already a valid variable or var() function.
-      if (processedModifier.startsWith('--')) {
-        validateVarName(processedModifier);
-        console.log("V4: Direct CSS var:", processedModifier);
-        return processedModifier;
+      if (modifier.startsWith('--')) {
+        validateVarName(modifier);
+        console.log("V4: Direct CSS dashed ident:", modifier);
+        return modifier;
       }
-      if (processedModifier.startsWith('var(--') && processedModifier.endsWith(')')) {
-        validateVarName(processedModifier.slice(4, -1));
-        console.log("V4: var() function:", processedModifier);
-        return processedModifier;
+      if (modifier.startsWith('var(--') && modifier.endsWith(')')) {
+        validateVarName(modifier.slice(4, -1));
+        console.log("V4: var() function:", modifier);
+        return modifier;
       }
       // Otherwise, assume it's a plain name needing prefixing.
       // For V4, `e` should be the identity function `(str => str)`.
-      const escapedForV4 = e(processedModifier);
+      // const escapedForV4 = e(modifier);
       const prefixedName = prefixAnchorName(escapedForV4);
       console.log(`V4: Plain name -> Prefixed: ${prefixedName}`);
       return prefixedName;
@@ -41,14 +41,14 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) 
       console.log("V3 Path");
       // Use the *trimmed* modifier for V3 parsing logic.
       // Direct CSS var
-      if (processedModifier.startsWith('--')) {
-        validateVarName(processedModifier);
-        console.log("V3: Direct CSS var:", processedModifier);
-        return processedModifier; // Return as-is
+      if (modifier.startsWith('--')) {
+        validateVarName(modifier);
+        console.log("V3: Direct CSS var:", modifier);
+        return modifier; // Return as-is
       }
       // Arbitrary Value [...]
-      if (processedModifier.startsWith('[') && processedModifier.endsWith(']')) {
-        const modifierInner = processedModifier.slice(1, -1);
+      if (modifier.startsWith('[') && modifier.endsWith(']')) {
+        const modifierInner = modifier.slice(1, -1);
         // Apply v3 escape function to the inner content
         const escapedInner = e(modifierInner);
         console.log(`V3: Arbitrary [...] -> Inner: "${modifierInner}", Escaped: "${escapedInner}"`);
@@ -72,13 +72,13 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) 
         return escapedInner;
       }
        // V4 shorthand () - should error in v3 (this check might be redundant if v4 path handles it, but safe to keep)
-       if (processedModifier.startsWith('(') && processedModifier.endsWith(')')) {
-         throw new Error(`This variable shorthand syntax is only supported in Tailwind CSS v4.0 and above: ${processedModifier}. In v3.x, you must use [${processedModifier.slice(1,-1)}].`);
+       if (modifier.startsWith('(') && modifier.endsWith(')')) {
+         throw new Error(`This variable shorthand syntax is only supported in Tailwind CSS v4.0 and above: ${modifier}. In v3.x, you must use [${modifier.slice(1,-1)}].`);
        }
       // Plain Modifier Name
-      console.log(`V3: Plain name: "${processedModifier}"`);
+      console.log(`V3: Plain name: "${modifier}"`);
       // Escape the plain modifier name for v3
-      const escapedModifier = e(processedModifier);
+      const escapedModifier = e(modifier);
       const prefixedName = prefixAnchorName(escapedModifier);
       console.log(`V3: Plain name -> Prefixed: ${prefixedName}`);
       return prefixedName;
