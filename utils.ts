@@ -40,7 +40,7 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) 
     if (modifier.startsWith('[') && modifier.endsWith(']')) {
       console.log(`${modifier}.startsWith('[') && ${modifier}.endsWith(']')`);
       let modifierInner = modifier.slice(1, -1);
-      // Apply escape function to the inner content, DO NOT trim its output
+      // Apply escape function to the inner content
       modifierInner = e(modifierInner);
 
       if (modifierInner.startsWith('var(--') && modifierInner.endsWith(')')) {
@@ -68,7 +68,7 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) 
       return modifierInner; // Return escaped inner value
     }
     console.log(`(ELSE-DEPTH-0)`);
-    // Apply escape function before prefixing, DO NOT trim its output
+    // Apply escape function before prefixing
     const escapedModifier = e(modifier);
     const prefixedName = prefixAnchorName(escapedModifier);
     console.log(`${prefixedName}`); // Log prefixed name
