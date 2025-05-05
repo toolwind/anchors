@@ -8,6 +8,17 @@ const validateVarName = (name: string) => {
 
 export type E_Type = ((className: string) => string);
 
+const reservedNames = [
+  // global values
+  'inherit',
+  'initial',
+  'revert',
+  'revert-layer',
+  'unset',
+  // none is a reserved value for `anchor-name`
+  'none',
+];
+
 export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) => {
   // Trim leading/trailing whitespace - potentially needed for v4 pre-processed values
   console.group({ rawModifier: `"${modifier}" (original)`, modifier: `"${modifier.trim()}"`, isV4 });
@@ -16,7 +27,10 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) 
   try {
     // --- V4 LOGIC ---
     if (isV4) {
-      if (['--', '[', '('].some(startChar => modifier.startsWith(startChar))) {
+      if (
+        reservedNames.some(name => modifier === name) ||
+        modifier.startsWith('--')
+      ) {
         return modifier;
       }
       return prefixAnchorName(modifier);
