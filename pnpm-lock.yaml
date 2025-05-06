@@ -30,9 +30,12 @@ importers:
         specifier: ^4.1.5
         version: 4.1.5
       tailwindcss:
-        specifier: ^4.1.4
+        specifier: ^4.1.5
         version: 4.1.5
       tailwindcss-v4:
+        specifier: https://gitpkg.vercel.app/tailwindlabs/tailwindcss/packages/tailwindcss?v4.1.5
+        version: tailwindcss@https://gitpkg.vercel.app/tailwindlabs/tailwindcss/packages/tailwindcss?v4.1.5
+      tailwindcss-v4_0:
         specifier: github:tailwindlabs/tailwindcss#v4.1.5
         version: '@tailwindcss/root@https://codeload.github.com/tailwindlabs/tailwindcss/tar.gz/45cd32eed7d328bd14caa9895077f5df441a6da7'
       tsdown:
@@ -1582,6 +1585,10 @@ packages:
 
   tailwindcss@4.1.5:
     resolution: {integrity: sha512-nYtSPfWGDiWgCkwQG/m+aX83XCwf62sBgg3bIlNiiOcggnS1x3uVRDAuyelBFL+vJdOPPCGElxv9DjHJjRHiVA==}
+
+  tailwindcss@https://gitpkg.vercel.app/tailwindlabs/tailwindcss/packages/tailwindcss?v4.1.5:
+    resolution: {tarball: https://gitpkg.vercel.app/tailwindlabs/tailwindcss/packages/tailwindcss?v4.1.5}
+    version: 4.1.5
 
   tinyexec@1.0.1:
     resolution: {integrity: sha512-5uC6DDlmeqiOwCPmK9jMSdOuZTh8bU39Ys6yidB+UTt5hfZUPGAypSgFRiEp+jbi9qH40BLDvy85jIU88wKSqw==}
@@ -3402,6 +3409,8 @@ snapshots:
       tslib: 2.8.1
 
   tailwindcss@4.1.5: {}
+
+  tailwindcss@https://gitpkg.vercel.app/tailwindlabs/tailwindcss/packages/tailwindcss?v4.1.5: {}
 
   tinyexec@1.0.1: {}
 

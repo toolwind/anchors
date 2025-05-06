@@ -66,8 +66,8 @@
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-prettier": "^5.2.6",
     "npm-run-all": "^4.1.5",
-    "tailwindcss": "^4.1.4",
-    "tailwindcss-v4": "github:tailwindlabs/tailwindcss#v4.1.5",
+    "tailwindcss": "^4.1.5",
+    "tailwindcss-v4": "https://gitpkg.vercel.app/tailwindlabs/tailwindcss/packages/tailwindcss?v4.1.5",
     "tsdown": "^0.10.1",
     "typescript": "^5.8.3"
   },
