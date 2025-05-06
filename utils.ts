@@ -20,11 +20,14 @@ const reservedNames = [
 ];
 
 const normalizeAnchorNameCore = (modifier: string | undefined) => {
+  // trim in case of any leading/trailing whitespace
+  modifier = modifier?.trim();
   if (!modifier) return null;
+
   /** current bug: v4 parses variable shorthand syntax in modifiers as
    * standard arbitrary values and replaces underscores with spaces,
    * so this undoes that as a stop-gap-solution */
-  modifier = modifier.trim().replace(/ /g, '_');
+  modifier = modifier.replace(/ /g, '_');
 
   if (
     reservedNames.some(name => modifier === name) ||
@@ -37,45 +40,17 @@ const normalizeAnchorNameCore = (modifier: string | undefined) => {
 }
 
 export const normalizeAnchorName = (modifier: string, isV4: boolean) => {
-  // Trim leading/trailing whitespace - potentially needed for v4 pre-processed values
-  console.group({ rawModifier: `"${modifier}" (original)`, modifier: `"${modifier.trim()}"`, isV4 });
-  modifier = modifier.trim();
-
-  console.log(`test parseModifier :: ${modifier} === ${JSON.stringify(parseModifierV4(modifier))}`);
-
-  if (!modifier) {
-    return null;
+  if (!modifier) return null;
+  if (isV4) return normalizeAnchorNameCore(modifier);
+  // Don't allow v3 to use v4 variable shorthand syntax: `(--name)` -> `var(--name)`
+  if (modifier.startsWith('(') && modifier.endsWith(')')) {
+    throw new Error(`This variable shorthand syntax is only supported in Tailwind CSS v4.0 and above: ${modifier}. In v3.x, you must use [${modifier.slice(1,-1)}].`);
   }
-
-  try {
-    // --- V4 LOGIC ---
-    if (isV4) {
-      /** this console.log has to stay here while the other logs are here,
-       * because the compiler is breaking with the console.group() without
-       * inner console.log's, presumably */
-      console.log("test");
-      return normalizeAnchorNameCore(modifier);
-    }
-    // --- V3 LOGIC ---
-    else {
-      console.log("V3 Path");
-      // Use the *trimmed* modifier for V3 parsing logic.
-      // Direct CSS var
-      if (modifier.startsWith('(') && modifier.endsWith(')')) {
-        throw new Error(`This variable shorthand syntax is only supported in Tailwind CSS v4.0 and above: ${modifier}. In v3.x, you must use [${modifier.slice(1,-1)}].`);
-      }
-      // in v3, [--name] is the variable shorthand syntax, so wrap in var()
-      if (modifier.startsWith('[--')) {
-        return `var(${modifier.slice(1, -1)})`;
-      }
-      return normalizeAnchorNameCore(parseModifierV4(modifier)?.value);
-    }
-  } catch (e) {
-    console.error(e);
-    return null;
-  } finally {
-    console.groupEnd();
+  // Explicitly support v3 variable shorthand syntax: `[--name]` -> `var(--name)`
+  if (modifier.startsWith('[--')) {
+    return `var(${modifier.slice(1, -1)})`;
   }
+  return normalizeAnchorNameCore(parseModifierV4(modifier)?.value);
 };
 
 // encode & decode functions to normalize anchor names for use in view-transition-name
