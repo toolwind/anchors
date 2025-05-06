@@ -19,7 +19,7 @@ const reservedNames = [
   'none',
 ];
 
-export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) => {
+export const normalizeAnchorName = (modifier: string, isV4: boolean) => {
   // Trim leading/trailing whitespace - potentially needed for v4 pre-processed values
   console.group({ rawModifier: `"${modifier}" (original)`, modifier: `"${modifier.trim()}"`, isV4 });
   modifier = modifier.trim();
@@ -42,6 +42,7 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) 
     }
     // --- V3 LOGIC ---
     else {
+      const escape = (str: string) => str.replace(/_/g, '\\_').replace(/ /g, '_');
       console.log("V3 Path");
       // Use the *trimmed* modifier for V3 parsing logic.
       // Direct CSS var
@@ -54,7 +55,7 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) 
       if (modifier.startsWith('[') && modifier.endsWith(']')) {
         const modifierInner = modifier.slice(1, -1);
         // Apply v3 escape function to the inner content
-        const escapedInner = e(modifierInner);
+        const escapedInner = escape(modifierInner);
         console.log(`V3: Arbitrary [...] -> Inner: "${modifierInner}", Escaped: "${escapedInner}"`);
 
         // Check structure of *escaped* inner value
@@ -82,7 +83,7 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) 
       // Plain Modifier Name
       console.log(`V3: Plain name: "${modifier}"`);
       // Escape the plain modifier name for v3
-      const escapedModifier = e(modifier);
+      const escapedModifier = escape(modifier);
       const prefixedName = prefixAnchorName(escapedModifier);
       console.log(`V3: Plain name -> Prefixed: ${prefixedName}`);
       return prefixedName;

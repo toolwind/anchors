@@ -10,16 +10,13 @@ const anchors = ((api: PluginAPI) => {
   // detect v4 by checking for the absence of the postcss argument
   const isV4 = !('postcss' in api);
 
-  // using a plain (str => str) for v4 instead of escaping because v4 pre-escapes
-  const e: E_Type = 'e' in api ? (api.e as E_Type) : (str => str);
-
   // anchor utilities (anchor-name)
   matchUtilities(
     {
       anchor: (_, { modifier }) => {
         const styles: Record<string, string> = {};
         if (modifier) {
-          const anchorName = normalizeAnchorName(modifier, isV4, e);
+          const anchorName = normalizeAnchorName(modifier, isV4);
           if (anchorName) {
             styles['anchor-name'] = anchorName;
           }
@@ -46,7 +43,7 @@ const anchors = ((api: PluginAPI) => {
         }
         if (modifier) {
           const viewTransitionName = generateViewTransitionId(modifier);
-          baseStyles['position-anchor'] = normalizeAnchorName(modifier, isV4, e);
+          baseStyles['position-anchor'] = normalizeAnchorName(modifier, isV4);
           baseStyles[':where(&)'] = {
             position: 'absolute',
             ...(viewTransitionName && { 'view-transition-name': viewTransitionName }),
@@ -76,7 +73,7 @@ const anchors = ((api: PluginAPI) => {
         matchUtilities(
           {
             [`${property}-anchor-${anchorSide}`]: (offset, { modifier }) => {
-              const anchorRef = modifier ? `${normalizeAnchorName(modifier, isV4, e)} ` : ''
+              const anchorRef = modifier ? `${normalizeAnchorName(modifier, isV4)} ` : ''
               const anchorFnExpr = `anchor(${anchorRef}${anchorSide})`
               const value = offset ? `calc(${anchorFnExpr} + ${offset})` : anchorFnExpr
               return {
@@ -110,7 +107,7 @@ const anchors = ((api: PluginAPI) => {
         matchUtilities(
           {
             [`${propertyAbbr}-anchor${anchorSizeUtilitySuffix}`]: (offset, { modifier }) => {
-              const anchorRef = modifier ? `${normalizeAnchorName(modifier, isV4, e)} ` : ''
+              const anchorRef = modifier ? `${normalizeAnchorName(modifier, isV4)} ` : ''
               const anchorFnExpr = `anchor-size(${anchorRef}${anchorSize})`
               const value = offset ? `calc(${anchorFnExpr} + ${offset})` : anchorFnExpr
               return {
