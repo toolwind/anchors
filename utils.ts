@@ -64,8 +64,16 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean) => {
       if (modifier.startsWith('(') && modifier.endsWith(')')) {
         throw new Error(`This variable shorthand syntax is only supported in Tailwind CSS v4.0 and above: ${modifier}. In v3.x, you must use [${modifier.slice(1,-1)}].`);
       }
-      if (modifier.startsWith('[--')) {
-        return modifier.slice(1, -1);
+      if (modifier.startsWith('[')) {
+        // in v3, [--name] is the variable shorthand syntax, so wrap in var()
+        if (modifier.startsWith('[--')) {
+          return `var(${modifier.slice(1, -1)})`;
+        }
+        // in v4, it's a common pattern to pass a custom ident this way, to avoid the parser wrapping it in var()
+        // still simpler to pass via anchor/--name, but striving for some backwards compatibility parity
+        if (modifier.startsWith('[_--')) {
+          return modifier.slice(2, -1);
+        }
       }
       return normalizeAnchorNameCore(parseModifierV4(modifier)?.value);
     }
