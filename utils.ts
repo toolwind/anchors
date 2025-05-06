@@ -26,7 +26,7 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean) => {
   console.group({ rawModifier: `"${modifier}" (original)`, modifier: `"${modifier.trim()}"`, isV4 });
   modifier = modifier.trim();
 
-  console.log(`test parseModifier :: ${modifier} === ${parseModifier(modifier)}`);
+  console.log(`test parseModifier :: ${modifier} === ${JSON.stringify(parseModifier(modifier))}`);
 
   try {
     // --- V4 LOGIC ---
