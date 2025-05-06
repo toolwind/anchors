@@ -25,14 +25,15 @@
     "dist",
     "index.css",
     "LICENSE",
-    "README.md"
+    "README.md",
+    "patches"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsdown index.ts --dts --format cjs,esm",
     "dev": "tsdown index.ts --dts --watch --format cjs,esm",
     "prepublishOnly": "npm run build",
-    "postinstall": "patch-package"
+    "postinstall": "node -e \"if(require('fs').existsSync('.git')){require('child_process').execSync('patch-package', {stdio:'inherit'})} else {console.log('Skipping patch-package for @toolwind/anchors: not in a git repository.')}\""
   },
   "publishConfig": {
     "access": "public"
