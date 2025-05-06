@@ -111,6 +111,7 @@ const anchors = ((api: PluginAPI) => {
               DEFAULT: '',
               ...themeValues,
             },
+            supportsNegativeValues: true,
             modifiers: 'any',
           },
         )
@@ -145,6 +146,7 @@ const anchors = ((api: PluginAPI) => {
               DEFAULT: '',
               ...themeValues,
             },
+            supportsNegativeValues: true,
             modifiers: 'any',
           },
         )
