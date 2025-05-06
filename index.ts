@@ -46,6 +46,10 @@ const anchors = ((api: PluginAPI) => {
           baseStyles['position-anchor'] = normalizeAnchorName(modifier, isV4);
           baseStyles[':where(&)'] = {
             position: 'absolute',
+            /** TODO: ask community what they think about turning this on by default
+             * and having to opt out when you don't want it, or leaving it off by
+             * default and having to opt in when you do want it */
+            // 'position-try-fallbacks': 'flip-block, flip-inline, flip-block flip-inline',
             ...(viewTransitionName && { 'view-transition-name': viewTransitionName }),
           };
         }
@@ -182,8 +186,11 @@ const anchors = ((api: PluginAPI) => {
     {
       values: {
         none: 'none',
+        'flip-all': 'flip-block, flip-inline, flip-block flip-inline',
         'flip-x': 'flip-inline',
         'flip-y': 'flip-block',
+        'flip-xy': 'flip-inline flip-block',
+        'flip-yx': 'flip-block flip-inline',
         'flip-s': 'flip-start',
         ...positionAreaValues,
       },
