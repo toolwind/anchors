@@ -27,6 +27,9 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean, e: E_Type) 
   try {
     // --- V4 LOGIC ---
     if (isV4) {
+      /** this console.log has to stay here while the other logs are here,
+       * because the compiler is breaking with the console.group() without
+       * inner console.log's, presumably */
       console.log("test");
       if (
         reservedNames.some(name => modifier === name) ||
