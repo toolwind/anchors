@@ -8,8 +8,6 @@ const validateVarName = (name: string) => {
   }
 }
 
-export type E_Type = ((className: string) => string);
-
 const reservedNames = [
   // global values
   'inherit',
@@ -23,8 +21,11 @@ const reservedNames = [
 
 const normalizeAnchorNameCore = (modifier: string | undefined) => {
   if (!modifier) return null;
+  /** current bug: v4 parses variable shorthand syntax in modifiers as
+   * standard arbitrary values and replaces underscores with spaces,
+   * so this undoes that as a stop-gap-solution */
+  modifier = modifier.trim().replace(/ /g, '_');
 
-  modifier = modifier.trim();
   if (
     reservedNames.some(name => modifier === name) ||
     modifier.startsWith('--') ||
@@ -57,23 +58,15 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean) => {
     }
     // --- V3 LOGIC ---
     else {
-      const escape = (str: string) => str.replace(/_/g, '\\_').replace(/ /g, '_');
       console.log("V3 Path");
       // Use the *trimmed* modifier for V3 parsing logic.
       // Direct CSS var
       if (modifier.startsWith('(') && modifier.endsWith(')')) {
         throw new Error(`This variable shorthand syntax is only supported in Tailwind CSS v4.0 and above: ${modifier}. In v3.x, you must use [${modifier.slice(1,-1)}].`);
       }
-      if (modifier.startsWith('[')) {
-        // in v3, [--name] is the variable shorthand syntax, so wrap in var()
-        if (modifier.startsWith('[--')) {
-          return `var(${modifier.slice(1, -1)})`;
-        }
-        // in v4, it's a common pattern to pass a custom ident this way, to avoid the parser wrapping it in var()
-        // still simpler to pass via anchor/--name, but striving for some backwards compatibility parity
-        if (modifier.startsWith('[_--')) {
-          return modifier.slice(2, -1);
-        }
+      // in v3, [--name] is the variable shorthand syntax, so wrap in var()
+      if (modifier.startsWith('[--')) {
+        return `var(${modifier.slice(1, -1)})`;
       }
       return normalizeAnchorNameCore(parseModifierV4(modifier)?.value);
     }
