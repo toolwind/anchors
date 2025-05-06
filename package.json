@@ -1,6 +1,6 @@
 {
   "name": "@toolwind/anchors",
-  "version": "0.1.8-24",
+  "version": "0.1.8-25",
   "description": "Anchors for Tailwind CSS provides a simple API for working with CSS anchor positioning, enabling flexible, declarative positioning relative to custom anchors.",
   "type": "module",
   "source": "index.ts",
