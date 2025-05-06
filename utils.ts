@@ -1,4 +1,4 @@
-import { parseModifier } from './node_modules/tailwindcss-v4/src/candidate.js';
+import { parseModifier as parseModifierV4 } from './node_modules/tailwindcss-v4/src/candidate.js';
 
 const prefixAnchorName = (name: string) => `--tw-anchor_${name}`;
 
@@ -21,12 +21,30 @@ const reservedNames = [
   'none',
 ];
 
+const normalizeAnchorNameCore = (modifier: string | undefined) => {
+  if (!modifier) return null;
+
+  modifier = modifier.trim();
+  if (
+    reservedNames.some(name => modifier === name) ||
+    modifier.startsWith('--') ||
+    modifier.startsWith('var(')
+  ) {
+    return modifier;
+  }
+  return prefixAnchorName(modifier);
+}
+
 export const normalizeAnchorName = (modifier: string, isV4: boolean) => {
   // Trim leading/trailing whitespace - potentially needed for v4 pre-processed values
   console.group({ rawModifier: `"${modifier}" (original)`, modifier: `"${modifier.trim()}"`, isV4 });
   modifier = modifier.trim();
 
-  console.log(`test parseModifier :: ${modifier} === ${JSON.stringify(parseModifier(modifier))}`);
+  console.log(`test parseModifier :: ${modifier} === ${JSON.stringify(parseModifierV4(modifier))}`);
+
+  if (!modifier) {
+    return null;
+  }
 
   try {
     // --- V4 LOGIC ---
@@ -35,14 +53,7 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean) => {
        * because the compiler is breaking with the console.group() without
        * inner console.log's, presumably */
       console.log("test");
-      if (
-        reservedNames.some(name => modifier === name) ||
-        modifier.startsWith('--') ||
-        modifier.startsWith('var(')
-      ) {
-        return modifier;
-      }
-      return prefixAnchorName(modifier);
+      return normalizeAnchorNameCore(modifier);
     }
     // --- V3 LOGIC ---
     else {
@@ -50,48 +61,17 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean) => {
       console.log("V3 Path");
       // Use the *trimmed* modifier for V3 parsing logic.
       // Direct CSS var
-      if (modifier.startsWith('--')) {
-        validateVarName(modifier);
-        console.log("V3: Direct CSS var:", modifier);
-        return modifier; // Return as-is
+      if (modifier.startsWith('(') && modifier.endsWith(')')) {
+        throw new Error(`This variable shorthand syntax is only supported in Tailwind CSS v4.0 and above: ${modifier}. In v3.x, you must use [${modifier.slice(1,-1)}].`);
       }
-      // Arbitrary Value [...]
-      if (modifier.startsWith('[') && modifier.endsWith(']')) {
-        const modifierInner = modifier.slice(1, -1);
-        // Apply v3 escape function to the inner content
-        const escapedInner = escape(modifierInner);
-        console.log(`V3: Arbitrary [...] -> Inner: "${modifierInner}", Escaped: "${escapedInner}"`);
-
-        // Check structure of *escaped* inner value
-        if (escapedInner.startsWith('--')) {
-           validateVarName(escapedInner);
-           console.log(`V3: Arbitrary [--x] -> var(${escapedInner})`);
-           // Arbitrary CSS vars in v3 need to be wrapped in var()
-           return `var(${escapedInner})`;
-        }
-        if (escapedInner.startsWith('var(--') && escapedInner.endsWith(')')) {
-           validateVarName(escapedInner.slice(4, -1));
-           console.log(`V3: Arbitrary [var(--x)] -> ${escapedInner}`);
-           // It's already var(), just return the escaped content
-           return escapedInner;
-        }
-        // Other arbitrary values (like escaped _foo, inherit, etc.)
-        console.log(`V3: Arbitrary [...] -> Other: ${escapedInner}`);
-        // Return the properly escaped inner value
-        return escapedInner;
+      if (modifier.startsWith('[--')) {
+        return modifier.slice(1, -1);
       }
-       // V4 shorthand () - should error in v3 (this check might be redundant if v4 path handles it, but safe to keep)
-       if (modifier.startsWith('(') && modifier.endsWith(')')) {
-         throw new Error(`This variable shorthand syntax is only supported in Tailwind CSS v4.0 and above: ${modifier}. In v3.x, you must use [${modifier.slice(1,-1)}].`);
-       }
-      // Plain Modifier Name
-      console.log(`V3: Plain name: "${modifier}"`);
-      // Escape the plain modifier name for v3
-      const escapedModifier = escape(modifier);
-      const prefixedName = prefixAnchorName(escapedModifier);
-      console.log(`V3: Plain name -> Prefixed: ${prefixedName}`);
-      return prefixedName;
+      return normalizeAnchorNameCore(parseModifierV4(modifier)?.value);
     }
+  } catch (e) {
+    console.error(e);
+    return null;
   } finally {
     console.groupEnd();
   }
