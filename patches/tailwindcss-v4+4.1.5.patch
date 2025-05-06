@@ -1,0 +1,13 @@
+diff --git a/node_modules/tailwindcss-v4/src/candidate.ts b/node_modules/tailwindcss-v4/src/candidate.ts
+index 27a6b62..270f9cb 100644
+--- a/node_modules/tailwindcss-v4/src/candidate.ts
++++ b/node_modules/tailwindcss-v4/src/candidate.ts
+@@ -503,7 +503,7 @@ export function* parseCandidate(input: string, designSystem: DesignSystem): Iter
+   }
+ }
+ 
+-function parseModifier(modifier: string): CandidateModifier | null {
++export function parseModifier(modifier: string): CandidateModifier | null {
+   if (modifier[0] === '[' && modifier[modifier.length - 1] === ']') {
+     let arbitraryValue = decodeArbitraryValue(modifier.slice(1, -1))
+ 

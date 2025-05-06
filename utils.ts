@@ -1,3 +1,5 @@
+import { parseModifier } from './node_modules/tailwindcss-v4/src/candidate.js';
+
 const prefixAnchorName = (name: string) => `--tw-anchor_${name}`;
 
 const validateVarName = (name: string) => {
@@ -23,6 +25,8 @@ export const normalizeAnchorName = (modifier: string, isV4: boolean) => {
   // Trim leading/trailing whitespace - potentially needed for v4 pre-processed values
   console.group({ rawModifier: `"${modifier}" (original)`, modifier: `"${modifier.trim()}"`, isV4 });
   modifier = modifier.trim();
+
+  console.log(`test parseModifier :: ${modifier} === ${parseModifier(modifier)}`);
 
   try {
     // --- V4 LOGIC ---
