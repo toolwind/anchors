@@ -31,6 +31,27 @@ const anchors = ((api: PluginAPI) => {
       modifiers: 'any',
     },
   );
+  // anchor-scope (anchor-scope)
+  matchUtilities(
+    {
+      'anchor-scope': (_, { modifier }) => {
+        const styles: Record<string, string> = {};
+        if (modifier) {
+          const anchorName = normalizeAnchorName(modifier, isV4);
+          if (anchorName) {
+            styles['anchor-scope'] = anchorName;
+          }
+        }
+        return styles;
+      },
+    },
+    {
+      values: {
+        DEFAULT: '',
+      },
+      modifiers: 'any',
+    },
+  );
   // anchored utility (position-area and/or position-anchor)
   matchUtilities(
     {
