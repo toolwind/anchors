@@ -1,5 +1,5 @@
 import type { PluginCreator, PluginAPI } from 'tailwindcss/plugin';
-import { normalizeAnchorName, positionAreaValues, encoding, type E_Type } from './utils.js';
+import { normalizeAnchorName, positionAreaValues, encoding } from './utils.js';
 export { encoding } from './utils.js';
 
 const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-${encoding.encode(str)}`
