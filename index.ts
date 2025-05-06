@@ -189,8 +189,6 @@ const anchors = ((api: PluginAPI) => {
         'flip-all': 'flip-block, flip-inline, flip-block flip-inline',
         'flip-x': 'flip-inline',
         'flip-y': 'flip-block',
-        'flip-xy': 'flip-inline flip-block',
-        'flip-yx': 'flip-block flip-inline',
         'flip-s': 'flip-start',
         ...positionAreaValues,
       },

@@ -311,6 +311,7 @@ Once an anchor has been defined, you can anchor other elements to it.
 
     Defines the fallback positions to attempt.
     - `try-none`: No fallbacks.
+    - `try-flip-all`: Flips horizontally, vertically, and diagonally (`flip-block, flip-inline, flip-block flip-inline`).
     - `try-flip-x`: Flips horizontally (`flip-inline`).
     - `try-flip-y`: Flips vertically (`flip-block`).
     - `try-flip-s`: Flips based on writing mode start direction (`flip-start`).
