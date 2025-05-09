@@ -1,12 +1,7 @@
+import crypto from 'crypto';
 import { parseModifier as parseModifierV4 } from './node_modules/tailwindcss-v4/src/candidate.js';
 
 const prefixAnchorName = (name: string) => `--tw-anchor_${name}`;
-
-const validateVarName = (name: string) => {
-  if (!name.startsWith('--') || name.length <= 2) {
-    throw new Error(`Invalid variable name: ${name}`);
-  }
-}
 
 const reservedNames = [
   // global values
@@ -75,6 +70,57 @@ export const encoding = {
     }
     return decodedChars.join('');
   }
+};
+
+export const generateRandomString = (length = 10) => {
+  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  const values = crypto.randomBytes(length);
+
+  for (let i = 0; i < length; i++) {
+    result += charset[(values[i] ?? 0) % charset.length];
+  }
+
+  return result;
+}
+
+type ToggleReturn = ReturnType<typeof createToggle>;
+type TogglesReturn = [
+  cssStyles: ToggleReturn[0],
+  toggles: Record<string, ToggleReturn[1]>,
+  groupedToggles: {
+    on: Record<string, ToggleReturn[1]['on']>;
+    off: Record<string, ToggleReturn[1]['off']>;
+  },
+];
+
+export const createToggle = (property: string, on: string, off: string) => {
+  const varName = `--toolwind-toggle-${generateRandomString()}`;
+  return [
+    {
+      [property]: `var(${varName}, ${off})`,
+    },
+    {
+      on: { [varName]: on, },
+      off: { [varName]: off, },
+    },
+  ] as const;
+}
+
+export const createToggles = (
+  togglesData: Parameters<typeof createToggle>[],
+): TogglesReturn => {
+  return togglesData.reduce(
+    (acc: TogglesReturn, [property, on, off]) => {
+      const [cssStyles, toggle] = createToggle(property, on, off);
+      return [
+        { ...acc[0], ...cssStyles },
+        { ...acc[1], [property]: toggle },
+        { ...acc[2], on: { ...acc[2].on, [property]: toggle.on }, off: { ...acc[2].off, [property]: toggle.off } },
+      ];
+    },
+    [{}, {}, { on: {}, off: {} }],
+  );
 };
 
 // position area values for use in anchored and position-try-fallbacks utilities

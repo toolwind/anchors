@@ -1,5 +1,10 @@
 import type { PluginCreator, PluginAPI } from 'tailwindcss/plugin';
-import { normalizeAnchorName, positionAreaValues, encoding } from './utils.js';
+import {
+  createToggles,
+  encoding,
+  normalizeAnchorName,
+  positionAreaValues,
+} from './utils.js';
 export { encoding } from './utils.js';
 
 const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-${encoding.encode(str)}`
@@ -7,16 +12,19 @@ const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-$
 const anchors = ((api: PluginAPI) => {
   const { addBase, addUtilities, matchUtilities, theme } = api;
 
-  // reset the position of anchored popovers to fix problematic UA default styles
-  const insetResetRef = '--tw-anchor-inset-value';
-  const insetResetSwitch = {
-    on: { [insetResetRef]: 'auto', },
-    off: { [insetResetRef]: '0px', },
-  }
+  // reset the styles of anchored popovers to fix problematic UA default styles
+  const [popoverStyles, _, popoverToggles] = createToggles([
+    ['inset', 'auto', '0px'],
+    ['background-color', 'transparent', 'canvas'],
+    ['color', 'inherit', 'canvastext'],
+  ]);
+
   addBase({
-    ':where([popover])': {
-      ...insetResetSwitch.off,
-      inset: `var(${insetResetRef}, 0px)`,
+    '[popover]': {
+      ...popoverStyles,
+      'background-color': 'transparent',
+      'color': 'inherit',
+      'margin': '0',
     },
   });
 
@@ -80,7 +88,7 @@ const anchors = ((api: PluginAPI) => {
             '&:where(&)': {
               position: 'absolute',
               ...(viewTransitionName && { 'view-transition-name': viewTransitionName }),
-              ...insetResetSwitch.on,
+              ...popoverToggles.on,
 
               /** TODO: ask community what they think about turning this on by default
                * and having to opt out when you don't want it, or leaving it off by
@@ -117,7 +125,7 @@ const anchors = ((api: PluginAPI) => {
               const value = offset ? `calc(${anchorFnExpr} + ${offset})` : anchorFnExpr
               return {
                 [property]: value,
-                ...insetResetSwitch.on,
+                ...popoverToggles.on,
               }
             },
           },
@@ -180,7 +188,7 @@ const anchors = ((api: PluginAPI) => {
     addUtilities({
       [`.${propertyAbbr}-anchor`]: {
         [property]: 'anchor-center',
-        ...insetResetSwitch.on,
+        ...popoverToggles.on,
       }
     })
   })
@@ -189,7 +197,7 @@ const anchors = ((api: PluginAPI) => {
     {
       'anchored-visible': (value) => ({
         'position-visibility': value,
-        ...insetResetSwitch.on,
+        ...popoverToggles.on,
       }),
     },
     {
@@ -206,7 +214,7 @@ const anchors = ((api: PluginAPI) => {
     {
       'try-order': (value) => ({
         'position-try-order': value,
-        ...insetResetSwitch.on,
+        ...popoverToggles.on,
       }),
     },
     {
@@ -222,7 +230,7 @@ const anchors = ((api: PluginAPI) => {
     {
       'try': (value) => ({
         'position-try-fallbacks': value,
-        ...insetResetSwitch.on,
+        ...popoverToggles.on,
       }),
     },
     {
