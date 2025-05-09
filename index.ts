@@ -8,17 +8,17 @@ const anchors = ((api: PluginAPI) => {
   const { addBase, addUtilities, matchUtilities, theme } = api;
 
   // reset the position of anchored popovers to fix problematic UA default styles
-  const insetResetRef = '--tw-anchor-inset-reset-switch';
+  const insetResetRef = '--tw-anchor-inset-value';
   const insetResetSwitch = {
-    on: { [insetResetRef]: 'initial', },
-    off: { [insetResetRef]: ' ', },
+    on: { [insetResetRef]: 'auto', },
+    off: { [insetResetRef]: '0px', },
   }
   addBase({
     ':where([popover])': {
       ...insetResetSwitch.off,
-      inset: `var(${insetResetRef}, auto)`,
+      inset: `var(${insetResetRef}, 0px)`,
     },
-  })
+  });
 
   // detect v4 by checking for the absence of the postcss argument
   const isV4 = !('postcss' in api);
