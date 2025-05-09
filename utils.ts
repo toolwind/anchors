@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import { parseModifier as parseModifierV4 } from './node_modules/tailwindcss-v4/src/candidate.js';
 
 const prefixAnchorName = (name: string) => `--tw-anchor_${name}`;
@@ -75,12 +74,10 @@ export const encoding = {
 export const generateRandomString = (length = 10) => {
   const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
-  const values = crypto.randomBytes(length);
-
   for (let i = 0; i < length; i++) {
-    result += charset[(values[i] ?? 0) % charset.length];
+    const randomIndex = Math.floor(Math.random() * charset.length);
+    result += charset[randomIndex];
   }
-
   return result;
 }
 
