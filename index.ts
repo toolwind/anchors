@@ -57,24 +57,28 @@ const anchors = ((api: PluginAPI) => {
     {
       anchored: (value, { modifier }) => {
         if (!value && !modifier) return {};
+        const viewTransitionName = modifier && generateViewTransitionId(modifier);
+        const anchorName = modifier && normalizeAnchorName(modifier, isV4);
 
-        const baseStyles: Record<string, any> = {};
-        if (value) {
-          baseStyles['position-area'] = value;
+        return {
+          ...(value && { 'position-area': value }),
+          ...(anchorName && {
+            'position-anchor': anchorName,
+            ':where(&)': {
+              /* reset popover's default positioning by default to reset problematic UA styles */
+              ':where(&[popover])': {
+                inset: 'auto',
+              },
+              position: 'absolute',
+              ...(viewTransitionName && { 'view-transition-name': viewTransitionName }),
+
+              /** TODO: ask community what they think about turning this on by default
+               * and having to opt out when you don't want it, or leaving it off by
+               * default and having to opt in when you do want it */
+              // 'position-try-fallbacks': 'flip-block, flip-inline, flip-block flip-inline',
+            },
+          }),
         }
-        if (modifier) {
-          const viewTransitionName = generateViewTransitionId(modifier);
-          baseStyles['position-anchor'] = normalizeAnchorName(modifier, isV4);
-          baseStyles[':where(&)'] = {
-            position: 'absolute',
-            /** TODO: ask community what they think about turning this on by default
-             * and having to opt out when you don't want it, or leaving it off by
-             * default and having to opt in when you do want it */
-            // 'position-try-fallbacks': 'flip-block, flip-inline, flip-block flip-inline',
-            ...(viewTransitionName && { 'view-transition-name': viewTransitionName }),
-          };
-        }
-        return baseStyles;
       },
     },
     {
