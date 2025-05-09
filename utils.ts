@@ -89,8 +89,8 @@ type TogglesReturn = [
   cssStyles: ToggleReturn[0],
   toggles: Record<string, ToggleReturn[1]>,
   groupedToggles: {
-    on: Record<string, ToggleReturn[1]['on']>;
-    off: Record<string, ToggleReturn[1]['off']>;
+    on: ToggleReturn[1]['on'];
+    off: ToggleReturn[1]['off'];
   },
 ];
 
@@ -116,7 +116,7 @@ export const createToggles = (
       return [
         { ...acc[0], ...cssStyles },
         { ...acc[1], [property]: toggle },
-        { ...acc[2], on: { ...acc[2].on, [property]: toggle.on }, off: { ...acc[2].off, [property]: toggle.off } },
+        { ...acc[2], on: { ...acc[2].on, ...toggle.on }, off: { ...acc[2].off, ...toggle.off } },
       ];
     },
     [{}, {}, { on: {}, off: {} }],
