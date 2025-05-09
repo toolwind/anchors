@@ -4,6 +4,13 @@ export { encoding } from './utils.js';
 
 const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-${encoding.encode(str)}`
 
+/* styles to reset the position of anchored popover to fix problematic UA default styles */
+const anchoredPositionReset = {
+  '&:where([popover])': {
+    inset: 'auto',
+  },
+}
+
 const anchors = ((api: PluginAPI) => {
   const { addUtilities, matchUtilities, theme } = api;
 
@@ -65,12 +72,9 @@ const anchors = ((api: PluginAPI) => {
           ...(anchorName && {
             'position-anchor': anchorName,
             '&:where(&)': {
-              /* reset popover's default positioning by default to reset problematic UA styles */
-              '&:where([popover])': {
-                inset: 'auto',
-              },
               position: 'absolute',
               ...(viewTransitionName && { 'view-transition-name': viewTransitionName }),
+              ...anchoredPositionReset,
 
               /** TODO: ask community what they think about turning this on by default
                * and having to opt out when you don't want it, or leaving it off by
@@ -107,6 +111,7 @@ const anchors = ((api: PluginAPI) => {
               const value = offset ? `calc(${anchorFnExpr} + ${offset})` : anchorFnExpr
               return {
                 [property]: value,
+                ...anchoredPositionReset,
               }
             },
           },
@@ -169,6 +174,7 @@ const anchors = ((api: PluginAPI) => {
     addUtilities({
       [`.${propertyAbbr}-anchor`]: {
         [property]: 'anchor-center',
+        ...anchoredPositionReset,
       }
     })
   })
@@ -177,6 +183,7 @@ const anchors = ((api: PluginAPI) => {
     {
       'anchored-visible': (value) => ({
         'position-visibility': value,
+        ...anchoredPositionReset,
       }),
     },
     {
@@ -193,6 +200,7 @@ const anchors = ((api: PluginAPI) => {
     {
       'try-order': (value) => ({
         'position-try-order': value,
+        ...anchoredPositionReset,
       }),
     },
     {
@@ -208,6 +216,7 @@ const anchors = ((api: PluginAPI) => {
     {
       'try': (value) => ({
         'position-try-fallbacks': value,
+        ...anchoredPositionReset,
       }),
     },
     {
