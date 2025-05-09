@@ -4,24 +4,19 @@ export { encoding } from './utils.js';
 
 const generateViewTransitionId = (str: string) => `--tw-anchor-view-transition-${encoding.encode(str)}`
 
-const anchoredPositionReset = {
-  '&:where([popover])': {
-    inset: 'auto',
-  },
-}
-
 const anchors = ((api: PluginAPI) => {
   const { addBase, addUtilities, matchUtilities, theme } = api;
 
   // reset the position of anchored popovers to fix problematic UA default styles
-  const resetSwitch = {
-    on: { '--tw-anchor-inset': 'initial', },
-    off: { '--tw-anchor-inset': ' ', },
+  const insetResetRef = '--tw-anchor-inset-reset-switch';
+  const insetResetSwitch = {
+    on: { [insetResetRef]: 'initial', },
+    off: { [insetResetRef]: ' ', },
   }
   addBase({
     ':where([popover])': {
-      ...resetSwitch.off,
-      inset: `var(--tw-anchor-inset, auto)`,
+      ...insetResetSwitch.off,
+      inset: `var(${insetResetRef}, auto)`,
     },
   })
 
@@ -85,7 +80,7 @@ const anchors = ((api: PluginAPI) => {
             '&:where(&)': {
               position: 'absolute',
               ...(viewTransitionName && { 'view-transition-name': viewTransitionName }),
-              ...resetSwitch.on,
+              ...insetResetSwitch.on,
 
               /** TODO: ask community what they think about turning this on by default
                * and having to opt out when you don't want it, or leaving it off by
@@ -122,7 +117,7 @@ const anchors = ((api: PluginAPI) => {
               const value = offset ? `calc(${anchorFnExpr} + ${offset})` : anchorFnExpr
               return {
                 [property]: value,
-                ...resetSwitch.on,
+                ...insetResetSwitch.on,
               }
             },
           },
@@ -185,7 +180,7 @@ const anchors = ((api: PluginAPI) => {
     addUtilities({
       [`.${propertyAbbr}-anchor`]: {
         [property]: 'anchor-center',
-        ...resetSwitch.on,
+        ...insetResetSwitch.on,
       }
     })
   })
@@ -194,7 +189,7 @@ const anchors = ((api: PluginAPI) => {
     {
       'anchored-visible': (value) => ({
         'position-visibility': value,
-        ...resetSwitch.on,
+        ...insetResetSwitch.on,
       }),
     },
     {
@@ -211,7 +206,7 @@ const anchors = ((api: PluginAPI) => {
     {
       'try-order': (value) => ({
         'position-try-order': value,
-        ...resetSwitch.on,
+        ...insetResetSwitch.on,
       }),
     },
     {
@@ -227,7 +222,7 @@ const anchors = ((api: PluginAPI) => {
     {
       'try': (value) => ({
         'position-try-fallbacks': value,
-        ...resetSwitch.on,
+        ...insetResetSwitch.on,
       }),
     },
     {
