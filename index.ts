@@ -17,16 +17,10 @@ const anchors = ((api: PluginAPI) => {
     ['inset', 'auto', '0px'],
     ['background-color', 'transparent', 'canvas'],
     ['color', 'inherit', 'canvastext'],
+    ['margin', '0px', 'auto'],
   ]);
 
-  addBase({
-    '[popover]': {
-      ...popoverStyles,
-      'background-color': 'transparent',
-      'color': 'inherit',
-      'margin': '0',
-    },
-  });
+  addBase({ '[popover]': popoverStyles });
 
   // detect v4 by checking for the absence of the postcss argument
   const isV4 = !('postcss' in api);
