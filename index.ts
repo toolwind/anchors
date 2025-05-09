@@ -64,9 +64,9 @@ const anchors = ((api: PluginAPI) => {
           ...(value && { 'position-area': value }),
           ...(anchorName && {
             'position-anchor': anchorName,
-            ':where(&)': {
+            '&:where(&)': {
               /* reset popover's default positioning by default to reset problematic UA styles */
-              ':where(&[popover])': {
+              '&:where([popover])': {
                 inset: 'auto',
               },
               position: 'absolute',
